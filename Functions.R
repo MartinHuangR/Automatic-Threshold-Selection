@@ -9,32 +9,33 @@
 #         AUSTRALIA                                                 #          
 #                                                                   #          
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-
+library(tidyverse)
+library(ncvreg)
 library(Rcpp)
 library(stabs)
-library(ncvreg)
-library(glmnet)
+library(mvtnorm)
 library(knockoff)
-
-simulationATS = function(d, true, p,  snr = 10){
+library(latex2exp)
+library(hdi)
+simulatihrbrthemessimulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   
   # Ensure SNR
-  signal = sqrt(mean((as.matrix(d$X) %*% as.matrix(d$beta))^2))
+  signal = sqrt(mean((as.matrix(X) %*% as.matrix(beta))^2))
   sigma = as.numeric(signal/sqrt(snr))
   
   # Compute Y with SNR
-  d$Y = as.matrix(d$X)%*%as.matrix(d$beta) + rnorm(nrow(d$X), 0, sd = sigma) 
+  Y = as.matrix(X)%*%as.matrix(beta) + rnorm(nrow(X), 0, sd = sigma) 
   
   # Stability Selection
-  s = stabs::stabsel(x = d$X, y = d$Y, B = 100,
+  s = stabs::stabsel(x = X, y = Y, B = 100,
                      fitfun = stabs::lars.lasso, PFER = 5, cutoff = 0.75,
                      sampling.type = "MB")
   
   # Shuffle data
-  idx = sample(1:nrow(d$X), replace = F)
-  rX = d$X[idx,]
+  idx = sample(1:nrow(X), replace = F)
+  rX = X[idx,]
   idxPushed = c(tail(idx, 1), head(idx, -1))
-  rY = d$Y[idxPushed] |> as.matrix(ncol = 1)
+  rY = Y[idxPushed] |> as.matrix(ncol = 1)
   
   # Exclusion Probability Threshold
   sMix = stabs::stabsel(x = rX, y = rY, B = 100,
@@ -50,67 +51,75 @@ simulationATS = function(d, true, p,  snr = 10){
   # 0.6 
   idx_chosen = sort(s$max, decreasing = T) >= 0.6
   q_static_selected = names(sort(s$max, decreasing = T))[idx_chosen]
-  pred = makePred(q_static_selected, d$X,p)
+  pred = makePred(q_static_selected, X,p)
   q_60_acc = acc(pred, true, p)
   
   # 0.75
   idx_chosen = sort(s$max, decreasing = T) >= 0.75
   q_static_selected = names(sort(s$max, decreasing = T))[idx_chosen]
-  pred = makePred(q_static_selected, d$X,p)
+  pred = makePred(q_static_selected, X,p)
   q_static_acc = acc(pred, true, p)
   
   
   # 0.9
   idx_chosen = sort(s$max, decreasing = T) >= 0.9
   q_static_selected = names(sort(s$max, decreasing = T))[idx_chosen]
-  pred = makePred(q_static_selected, d$X,p)
+  pred = makePred(q_static_selected, X,p)
   q_90_acc = acc(pred, true, p)
   
   
   
   
   # ATS 
-  ATS = getR(convert(s)) 
-  ATS_val = (sort(s$max, decreasing = T)[ATS]) |> as.vector()
-  ATS_selected = sort(s$max, decreasing = T)[1:ATS_val] |> names()
-  pred = makePred(ATS_selected, d$X,p)
+  ATS = convert(s)
+  if (length(ATS) == 2){ATS = c(ATS, ATS[1])}
+  ATS = ATS |> getR()
+  ATS_selected = sort(s$max, decreasing = T)[1:ATS] |> names()
+  pred = makePred(ATS_selected, X,p)
   ATS_acc = acc(pred, true, p)
   
   
   # Exclusion ATS  
-  EATS =  convert(s)[1:(length(convert(s)))][convert(s)[1:(length(convert(s)))] >= 100*mix_exclusion] |> getR()
+  EATS =  convert(s)[1:(length(convert(s)))][convert(s)[1:(length(convert(s)))] >= 100*mix_exclusion] 
+  if (length(EATS) == 2){EATS = c(EATS, EATS[1])}
+  EATS = EATS |> getR()
   EATS_selected = sort(s$max, decreasing = T)[1:EATS] |> names()
-  pred = makePred(EATS_selected, d$X,p)
+  pred = makePred(EATS_selected, X,p)
   EATS_acc = acc(pred, true, p)
   
   # Knockoff
-  kf = knockoff::knockoff.filter(d$X, d$Y)
+  if (gaussian.knockoffs == T){
+    gaussian_knockoffs = function(X) knockoff::create.second_order(X, method='equi', shrink=T)
+    kf = knockoff::knockoff.filter(X, Y, knockoffs = gaussian_knockoffs)
+  }else{
+    kf = knockoff::knockoff.filter(X, Y)
+  }
   ko_selected = names(kf$selected)
-  pred = makePred(ko_selected, d$X, p)
+  pred = makePred(ko_selected, X, p)
   ko_acc = acc(pred, true, p)
   
   
   # LASSO 
-  l = cv.glmnet(d$X, d$Y)
+  l = cv.glmnet(X, Y)
   c1se = which(coef(l, lambda = l$lambda.1se)[-1] != 0)
-  c1se_selected = colnames(d$X)[c1se]
-  pred = makePred(c1se_selected, d$X, p)
+  c1se_selected = colnames(X)[c1se]
+  pred = makePred(c1se_selected, X, p)
   l1se_acc = acc(pred, true, p)
   
   cmin = which(coef(l, lambda = l$lambda.min)[-1] != 0)
-  cmin_selected = colnames(d$X)[cmin]
-  pred = makePred(cmin_selected, d$X, p)
+  cmin_selected = colnames(X)[cmin]
+  pred = makePred(cmin_selected, X, p)
   lmin_acc = acc(pred, true, p)
   
   
   # SCAD
-  nr = cv.ncvreg(d$X,d$Y, penalty = "SCAD")
+  nr = cv.ncvreg(X,Y, penalty = "SCAD")
   nrcoef = which(coef(nr, lambda = nr$lambda.min)[-1] != 0)
-  nr_selected = colnames(d$X)[nrcoef]
-  pred = makePred(nr_selected, d$X, p)
+  nr_selected = colnames(X)[nrcoef]
+  pred = makePred(nr_selected, X, p)
   scad_acc = acc(pred, true, p)
   
-  
+  print("Hello") ### DELETE THIS LATER ###
   # Output
   list("0.75" = q_static_acc,
        "0.60" = q_60_acc,
@@ -175,7 +184,7 @@ prep = function(l){
 }
 
 
-cleanMCC = function(x){
+cleanMCC = function(x, repeats = 1000){
   z0.75 = lapply(x[1,], prep)
   z0.60 =  lapply(x[2,], prep)
   z0.90 =  lapply(x[3,], prep)
@@ -267,10 +276,26 @@ gendata = function(n, p, active){
   list("Y" = y, "X" = x, "beta" = beta)
 }
 
+### Plotting ### 
+makeCluster = function(c){
+  c$cluster = case_when(c$Method == "All" ~ "All",
+                        c$Method %in% c("Quarter", "Quarter Excl 0.2", "Quarter Excl 0.1",
+                                        "Quarter Adaptive Excl 95%", "Quarter Adaptive Excl 99%",
+                                        "Quarter Shuffle 95%") ~ "Quarter",
+                        c$Method %in% c("Static 0.60", "Static 0.75", "Static 0.90") ~ "Static",
+                        c$Method %in% c("LASSO 1SE", "LASSO MIN") ~ "LASSO",
+                        .default = as.character(c$Method))
+  c
+}
 
-### Simulation 4 Example ###
-n = 500; p = 100; active = 2; repeats = 2; snr = 10
-d = gendata(n = n, p = p, active = active)
-true = c(rep(1, active), rep(0,p-active))
-S1 = replicate(repeats, simulationATS(d = d, true = true, p = p, snr = snr))
-cleanMCC(S1)
+theme_few_grid = function (base_size = 12, base_family = "") 
+{
+  gray <- "#4D4D4D"
+  black <- "#000000"
+  theme_bw(base_size = base_size, base_family = base_family) + 
+    theme(line = element_line(colour = gray), rect = element_rect(fill = "white", 
+                                                                  colour = NA), text = element_text(colour = black), 
+          axis.ticks = element_line(colour = gray), legend.key = element_rect(colour = NA), 
+          panel.border = element_rect(colour = gray), panel.grid = element_line(color = alpha("black", 0.05)), 
+          strip.background = element_rect(fill = "white", colour = NA))
+}
