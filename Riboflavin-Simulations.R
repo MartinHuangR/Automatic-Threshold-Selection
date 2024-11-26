@@ -42,19 +42,16 @@ active = 3; repeats = 1000;  snr = 10; p = 20
 beta = c(rep(1,active), rep(0, ncol(X) - active))
 true = c(rep(1, active),rep(0,ncol(X) - active ))
 r3.10.sub = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr))
-plotclean(cleanMCC(r3.10.sub)) 
 
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 active = 7; repeats = 1000;  snr = 5; p = 20
 beta = c(rep(1,active), rep(0, ncol(X) - active))
 true = c(rep(1, active),rep(0,ncol(X) - active ))
 r7.5.sub = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr))
-plotclean(cleanMCC(r7.5.sub)) 
 
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 active = 7; repeats = 1000;  snr = 10; p = 20
 beta = c(rep(1,active), rep(0, ncol(X) - active))
 true = c(rep(1, active),rep(0,ncol(X) - active ))
 r7.10.sub = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr))
-plotclean(cleanMCC(r7.10.sub)) 
 
