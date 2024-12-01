@@ -119,7 +119,8 @@ simulatihrbrthemessimulationATS = function(X, true, p, beta,  snr = 10, gaussian
   pred = makePred(nr_selected, X, p)
   scad_acc = acc(pred, true, p)
   
-  print("Hello") ### DELETE THIS LATER ###
+  print("Computing...") 
+  
   # Output
   list("0.75" = q_static_acc,
        "0.60" = q_60_acc,
@@ -220,7 +221,47 @@ cleanMCC = function(x, repeats = 1000){
   MCCdf
 }
 
+cleanN = function(x, repeats = 1000){
+  z0.75 = lapply(x[1,], prep)
+  z0.60 =  lapply(x[2,], prep)
+  z0.90 =  lapply(x[3,], prep)
+  ATS = lapply(x[4,],prep)
+  EATS = lapply(x[5,], prep)
+  lasso_1se = lapply(x[6,], prep)
+  lasso_min = lapply(x[7,], prep)
+  ko = lapply(x[8,],prep)
+  scad = lapply(x[9,],prep)
+  
+  Ndf = data.frame("NN" = c(extractN(z0.75),
+                            extractN(z0.60),
+                            extractN(z0.90),
+                            extractN(ATS),
+                            extractN(EATS),
+                            extractN(lasso_1se),
+                            extractN(lasso_min),
+                            extractN(ko),
+                            extractN(scad)),
+                   "Method" = c(rep("Static 0.75", repeats),
+                                rep("Static 0.60", repeats),
+                                rep("Static 0.90", repeats),
+                                rep("ATS", repeats),
+                                rep("Exclusion ATS", repeats),
+                                rep("LASSO 1SE", repeats),
+                                rep("LASSO MIN", repeats),
+                                rep("Knockoff", repeats),
+                                rep("SCAD", repeats)))
+  
+  Ndf$Method = factor(Ndf$Method, levels = c("ATS", "Exclusion ATS",
+                                             "Static 0.60", "Static 0.75", "Static 0.90",
+                                             "LASSO 1SE", "LASSO MIN", "Knockoff", "SCAD"))
+  Ndf
+}
 
+extractN = function(ql){
+  tp = sapply(ql, "[[", 1) 
+  fp = sapply(ql, "[[", 2)
+  tp + fp
+}
 
 ### ATS Function ###
 Rcpp::cppFunction('
@@ -299,3 +340,5 @@ theme_few_grid = function (base_size = 12, base_family = "")
           panel.border = element_rect(colour = gray), panel.grid = element_line(color = alpha("black", 0.05)), 
           strip.background = element_rect(fill = "white", colour = NA))
 }
+
+
