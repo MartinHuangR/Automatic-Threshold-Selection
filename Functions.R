@@ -17,7 +17,9 @@ library(mvtnorm)
 library(knockoff)
 library(latex2exp)
 library(hdi)
-simulatihrbrthemessimulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
+library(patchwork)
+library(hrbrthemes)
+simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   
   # Ensure SNR
   signal = sqrt(mean((as.matrix(X) %*% as.matrix(beta))^2))
