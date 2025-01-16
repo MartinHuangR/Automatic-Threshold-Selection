@@ -1,13 +1,11 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 5                                     #
-# in the paper: Data-Adaptive and Automatic Stable Threshold        #
-# Calibration for Stability Selection in Penalised Regression       #
-#                       (Huang et al. 2024)                         #                                     
+# R-code functions to produce Section 4 Results                     #
+# in the paper: Data-Adaptive Automatic Threshold Calibration       #
+#  for Stability Selection (Huang et al. 2025)                      #
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
-#                                                                   #          
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 library(tidyverse)
 library(ncvreg)
@@ -344,3 +342,55 @@ theme_few_grid = function (base_size = 12, base_family = "")
 }
 
 
+### FDR Function ###
+
+fdr = function(X, p, beta, snr, EV, LOOPS = 1000){
+  false.selections = correct.selections.prop = method = pi = c()
+  for (i in 1:LOOPS){
+    signal = sqrt(mean((as.matrix(X) %*% as.matrix(beta))^2))
+    sigma = as.numeric(signal/sqrt(snr))
+    
+    # Compute Y with SNR
+    Y = as.matrix(X)%*%as.matrix(beta) + rnorm(nrow(X), 0, sd = sigma) 
+    
+    # Stability Selection
+    s = stabs::stabsel(x = X, y = Y, B = 100,
+                       fitfun = stabs::lars.lasso, PFER = 5, cutoff = 0.75,
+                       sampling.type = "MB")
+    
+    # Shuffle data
+    idx = sample(1:nrow(X), replace = F)
+    rX = X[idx,]
+    idxPushed = c(tail(idx, 1), head(idx, -1))
+    rY = Y[idxPushed] |> as.matrix(ncol = 1)
+    
+    # Exclusion Probability Threshold
+    sMix = stabs::stabsel(x = rX, y = rY, B = 100,
+                          fitfun = stabs::lars.lasso, PFER = 5, cutoff = 0.75,
+                          sampling.type = "MB")
+    
+    sMix_prob = sort(sMix$max, decreasing = T)
+    mix_exclusion = quantile(sMix_prob, 0.95)
+    
+    EATS =  convert(s)[1:(length(convert(s)))][convert(s)[1:(length(convert(s)))] >= 100*mix_exclusion] 
+    if (length(EATS) == 2){EATS = c(EATS, EATS[1])}
+    EATSix = EATS |> getR()
+    
+    pi.hat = EATS[EATSix]/100
+    
+    if (pi.hat <= 0.5){
+      s = stabs::stabsel(x = X, y = Y, B = 100,
+                         fitfun = stabs::lars.lasso, PFER = EV, cutoff = 0.501,
+                         sampling.type = "MB")
+    }else{
+      s = stabs::stabsel(x = X, y = Y, B = 100,
+                         fitfun = stabs::lars.lasso, PFER = EV, cutoff = pi.hat,
+                         sampling.type = "MB")
+    }
+    false.selections[i] = sum(!(s$selected %in% 1:active))
+    correct.selections.prop[i] = sum((s$selected %in% 1:active))/active
+    pi[i] = pi.hat
+    if (i %% 10 == 0){print(i)}
+  }
+  out = data.frame(false.selections, correct.selections.prop, pi, EV, snr)
+}

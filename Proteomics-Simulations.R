@@ -1,17 +1,14 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 5 Proteomics                          #
-# in the paper: Data-Adaptive and Automatic Stable Threshold        #
-# Calibration for Stability Selection in Penalised Regression       #
-#                       (Huang et al. 2024)                         #                                     
+# R-code to reproduce Section 4 Proteomics                          #
+# in the paper: Data-Adaptive Automatic Threshold Calibration       #
+#  for Stability Selection (Huang et al. 2025)                      #                                  
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
 #                                                                   #
-#                                                                   #
 # Note: This will take approximately 4 hours to run. I have provided#
 # an Rdata file for my simulations. To access MCC use cleanMCC()    #
-#                                                                   #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 # Each Rdata contains the two SNR values for each number of active variable settings.

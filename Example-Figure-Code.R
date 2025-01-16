@@ -1,13 +1,11 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 5 Figures 4 & 5                       #
-# in the paper: Data-Adaptive and Automatic Stable Threshold        #
-# Calibration for Stability Selection in Penalised Regression       #
-#                       (Huang et al. 2024)                         #                                     
+# R-code to reproduce Section 4 Figures 4 & 5                       #
+# in the paper: Data-Adaptive Automatic Threshold Calibration       #
+#  for Stability Selection (Huang et al. 2025)                      #                                    
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
-#                                                                   #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
 load("RData/r3sub.Rdata")
