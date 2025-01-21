@@ -10,6 +10,7 @@
 library(tidyverse)
 library(ncvreg)
 library(Rcpp)
+library(lars)
 library(stabs)
 library(mvtnorm)
 library(knockoff)
