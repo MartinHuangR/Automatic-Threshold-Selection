@@ -1,6 +1,6 @@
-# Automatic Threshold Selection
+# Data-Adaptive Automatic Threshold Calibration for Stability Selection
  
-This repository contains code to reproduce results as given in the paper "Data-Adaptive and Automatic Stable Threshold Calibration for Stability Selection in Penalised Regression". 
+This repository contains code to reproduce results as given in the paper "Data-Adaptive Automatic Threshold Calibration for Stability Selection". 
 
 ## Simulations
 We provide the four reproducible simulation results in "Artificial-Simulations.R", "Riboflavin-Simulations.R", "Proteomics-Simulation.R", and FDR-Simulations.R. Note that running all four scripts will take at least 48 hours. Therefore we also provide the .Rdata files, which can be found in the "RData" folder.
