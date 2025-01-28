@@ -342,6 +342,79 @@ theme_few_grid = function (base_size = 12, base_family = "")
           strip.background = element_rect(fill = "white", colour = NA))
 }
 
+totplotnoaxis = function(TOT){
+  ggplot(TOT,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+    facet_grid(Dimension ~SNR, labeller = label_parsed) +
+    # facet_wrap(~Dimension, ncol = 4) + 
+    theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x= element_blank()) +
+    xlab(element_blank()) +
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+}
+
+
+totplot = function(TOT){
+  ggplot(TOT,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+    facet_grid(Dimension ~SNR, labeller = label_parsed) +
+    # facet_wrap(~Dimension, ncol = 4) + 
+    theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+          strip.text.x = element_blank()) +
+    xlab(element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+}
+
+
+combine = function(a,b,c,d = NULL, ref, ribo = F, filtered = NULL){
+  if (is.null(filtered) == T){
+    filtered = c("All", "Quarter Adaptive 95%",
+                 "Quarter Adaptive 99%", "Quarter Shuffle 95%", "Shuffle 95%",
+                 "Shuffle Weighted", "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "LASSO MIN")
+  }
+  dimension = c("n = 20, p = 1000, active = 2",
+                "n = 100, p = 500, active = 10",
+                "n = 200, p = 200, active = 20",
+                "n = 500, p = 100, active = 20")
+  labels  = c("(I):~n==20*`,`~p==1000*`,`~`|`*beta[S]*`|`==2",
+              "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
+              "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
+              "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
+  SNR = c(10,5,3, 1)
+  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  if (ribo == F){
+    r = rbind(a |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+              b |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+              c |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+              d |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+    r$Method = as.character(r$Method)
+    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+    r$Method[r$Method == "Exclusion ATS"] = "EATS"
+    r$Method[r$Method == "All"] = "ATS"
+    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+      mutate(Dimension = factor(Dimension, labels = labels[ref]),
+             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
+                          labels = c(SNRlabels[1],
+                                     SNRlabels[2],
+                                     SNRlabels[3],
+                                     SNRlabels[4])))
+    
+    return(r)
+  }else if (ribo == T){
+    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
+              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
+    return(data.frame(r))
+  }
+}
+
 
 ### FDR Function ###
 
