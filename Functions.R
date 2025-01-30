@@ -418,8 +418,9 @@ combine = function(a,b,c,d = NULL, ref, ribo = F, filtered = NULL){
 
 ### FDR Function ###
 
+
 fdr = function(X, p, beta, snr, EV, LOOPS = 1000){
-  false.selections = correct.selections.prop = method = pi = c()
+  n.selected = false.selections = correct.selections.prop = method = pi = c()
   for (i in 1:LOOPS){
     signal = sqrt(mean((as.matrix(X) %*% as.matrix(beta))^2))
     sigma = as.numeric(signal/sqrt(snr))
@@ -461,10 +462,13 @@ fdr = function(X, p, beta, snr, EV, LOOPS = 1000){
                          fitfun = stabs::lars.lasso, PFER = EV, cutoff = pi.hat,
                          sampling.type = "MB")
     }
+    
+    n.selected[i] = length(s$selected)
     false.selections[i] = sum(!(s$selected %in% 1:active))
     correct.selections.prop[i] = sum((s$selected %in% 1:active))/active
     pi[i] = pi.hat
+    method[i] = ifelse(pi.hat < 0.5, "CPSS", "SS")
     if (i %% 10 == 0){print(i)}
   }
-  out = data.frame(false.selections, correct.selections.prop, pi, EV, snr)
+  out = data.frame(n.selected,false.selections, correct.selections.prop, method, pi, EV, snr)
 }
