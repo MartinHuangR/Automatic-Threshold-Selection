@@ -339,7 +339,7 @@ theme_few_grid = function (base_size = 12, base_family = "")
                                                                   colour = NA), text = element_text(colour = black), 
           axis.ticks = element_line(colour = gray), legend.key = element_rect(colour = NA), 
           panel.border = element_rect(colour = gray), panel.grid = element_line(color = alpha("black", 0.05)), 
-          strip.background = element_rect(fill = "white", colour = NA))
+          strip.background = element_rect(fill = "#f7f9fc", colour = gray))
 }
 
 totplotnoaxis = function(TOT){
