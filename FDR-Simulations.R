@@ -9,10 +9,10 @@
 #                                                                   #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
-load("RData/FDR.I.RData")
-load("RData/FDR.II.RData")
-load("RData/FDR.III.RData")
-load("RData/FDR.IV.RData")
+load("Data/FDR.I.RData")
+load("Data/FDR.II.RData")
+load("Data/FDR.III.RData")
+load("Data/FDR.IV.RData")
 
 # Setting 1
 set.seed(1)

@@ -12,8 +12,8 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 # Each Rdata contains the two SNR values for each number of active variable settings.
-load("RData/r3sub.Rdata")
-load("RData/r7sub.Rdata")
+load("Data/r3sub.Rdata")
+load("Data/r7sub.Rdata")
 source("Functions.R")
 data(riboflavin)
 X = data.matrix(riboflavin$x)

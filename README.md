@@ -3,7 +3,7 @@
 This repository contains code to reproduce results as given in the paper "Data-Adaptive Automatic Threshold Calibration for Stability Selection". 
 
 ## Simulations
-We provide the four reproducible simulation results in "Artificial-Simulations.R", "Riboflavin-Simulations.R", "Proteomics-Simulation.R", and FDR-Simulations.R. Note that running all four scripts will take at least 48 hours. Therefore we also provide the .Rdata files, which can be found in the "RData" folder.
+We provide the four reproducible simulation results in "Artificial-Simulations.R", "Riboflavin-Simulations.R", "Proteomics-Simulation.R", and FDR-Simulations.R. Note that running all four scripts will take at least 48 hours without parallelisation. Therefore we also provide the .Rdata files, which can be found in the "Data" folder.
 
 To reproduce the figures, we provide an example given in "Example-Figure-Code.R".
 
@@ -14,4 +14,4 @@ Please note that we are aware of an issue whereby the `stabsel` function does no
 
 ## Data Availability
 
-We provide the plasma proteomics dataset as "Proteomics.csv", and was sourced from Rumer et al. (2022). The riboflavin dataset can be accessed through the R-package `hdi` and `data(riboflavin)`. The artificial data generation process can be located in "Functions.R"
+We provide the plasma proteomics dataset as "Proteomics.csv" in the folder "Data", and was sourced from Rumer et al. (2022). The riboflavin dataset can be accessed through the R-package `hdi` and `data(riboflavin)`. The artificial data generation process can be located in "Functions.R"

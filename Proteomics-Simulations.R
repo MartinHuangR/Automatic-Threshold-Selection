@@ -12,10 +12,11 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 # Each Rdata contains the two SNR values for each number of active variable settings.
-load("RData/pro9.Rdata")
-load("RData/pro4.Rdata")
+load("Data/pro9.Rdata")
+load("Data/pro4.Rdata")
 source("Functions.R")
-pro = read.csv("Proteomics.csv")
+
+pro = read.csv("Data/Proteomics.csv")
 pro = pro |> select(-sampleID)
 X = pro |> as.matrix() |> scale()
 

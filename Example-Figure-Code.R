@@ -7,13 +7,12 @@
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+library(patchwork)
 source("Functions.R")
-load("RData/r3sub.Rdata")
-load("RData/r7sub.Rdata")
-load("RData/S1hard.Rdata")
-load("RData/S2hard.Rdata")
-load("RData/S3hard.Rdata")
-load("RData/S4hard.Rdata")
+load("Data/S1hardR.Rdata")
+load("Data/S2hardR.Rdata")
+load("Data/S3hardR.Rdata")
+load("Data/S4hardR.Rdata")
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # MCC Artificial Data
 filtered = c("ATS", "Exclusion ATS",
@@ -26,5 +25,7 @@ c44hard = combine(S4.10hard, S4.5hard, S4.3hard, S4.1hard, 4, filtered = filtere
 
 c1hard = rbind(c11hard,c22hard) |> totplotnoaxis()
 c2hard = rbind(c33hard,c44hard) |> totplot()
-library(patchwork)
+
 c1hard/c2hard
+
+
