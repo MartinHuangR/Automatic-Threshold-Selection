@@ -222,6 +222,7 @@ cleanMCC = function(x, repeats = 1000){
   MCCdf
 }
 
+
 cleanN = function(x, repeats = 1000){
   z0.75 = lapply(x[1,], prep)
   z0.60 =  lapply(x[2,], prep)
@@ -256,6 +257,103 @@ cleanN = function(x, repeats = 1000){
                                              "Static 0.60", "Static 0.75", "Static 0.90",
                                              "LASSO 1SE", "LASSO MIN", "Knockoff", "SCAD"))
   Ndf
+}
+
+cleanPrecision = function(x){
+  z0.75 = lapply(x[1,], prep)
+  z0.60 =  lapply(x[2,], prep)
+  z0.90=  lapply(x[3,], prep)
+  ats = lapply(x[4,],prep)
+  eats = lapply(x[5,], prep)
+  lasso_1se = lapply(x[6,], prep)
+  lasso_min = lapply(x[7,], prep)
+  ko = lapply(x[8,],prep)
+  scad = lapply(x[9,],prep)
+  
+  P = data.frame("Precision" = c(extractPrecision(z0.75),
+                                   extractPrecision(z0.60),
+                                   extractPrecision(z0.90),
+                                   extractPrecision(ats),
+                                   extractPrecision(eats),
+                                   extractPrecision(lasso_1se),
+                                   extractPrecision(lasso_min),
+                                   extractPrecision(ko),
+                                   extractPrecision(scad)),
+                   "Method" = c(rep("Static 0.75", repeats),
+                                rep("Static 0.60", repeats),
+                                rep("Static 0.90", repeats),
+                                rep("ATS", repeats),
+                                rep("Exclusion ATS", repeats),
+                                rep("LASSO 1SE", repeats),
+                                rep("LASSO MIN", repeats),
+                                rep("Knockoff", repeats),
+                                rep("SCAD", repeats)))
+  
+  P$Method = factor(P$Method, levels = c("ATS", "Exclusion ATS",
+                                             "Static 0.60", "Static 0.75", "Static 0.90",
+                                             "LASSO 1SE", "LASSO MIN", "Knockoff", "SCAD"))
+  P
+}
+
+cleanRecall = function(x){
+  z0.75 = lapply(x[1,], prep)
+  z0.60 =  lapply(x[2,], prep)
+  z0.90=  lapply(x[3,], prep)
+  ats = lapply(x[4,],prep)
+  eats = lapply(x[5,], prep)
+  lasso_1se = lapply(x[6,], prep)
+  lasso_min = lapply(x[7,], prep)
+  ko = lapply(x[8,],prep)
+  scad = lapply(x[9,],prep)
+  
+  R = data.frame("Recall" = c(extractRecall(z0.75),
+                                extractRecall(z0.60),
+                                extractRecall(z0.90),
+                                extractRecall(ats),
+                                extractRecall(eats),
+                                extractRecall(lasso_1se),
+                                extractRecall(lasso_min),
+                                extractRecall(ko),
+                                extractRecall(scad)),
+                   "Method" = c(rep("Static 0.75", repeats),
+                                rep("Static 0.60", repeats),
+                                rep("Static 0.90", repeats),
+                                rep("ATS", repeats),
+                                rep("Exclusion ATS", repeats),
+                                rep("LASSO 1SE", repeats),
+                                rep("LASSO MIN", repeats),
+                                rep("Knockoff", repeats),
+                                rep("SCAD", repeats)))
+  
+  R$Method = factor(R$Method, levels = c("ATS", "Exclusion ATS",
+                                             "Static 0.60", "Static 0.75", "Static 0.90",
+                                             "LASSO 1SE", "LASSO MIN", "Knockoff", "SCAD"))
+  R
+}
+
+extractPrecision = function(ql){
+  fp = sapply(ql, "[[", 2)
+  tp = sapply(ql, "[[", 1) 
+  fn = sapply(ql, "[[", 4)
+  tn = sapply(ql, "[[", 3)
+  
+  ans = c()
+  for (i in 1:length(tn)){
+    if ((tp[i] == 0 & fp[i] > 0) | (tp[i] == 0 & fn[i] > 0)){
+      ans[i] = 0
+    }else{
+      ans[i] = tp[i]/(tp[i] + fp[i])
+    }
+  }
+  ans
+}
+
+extractRecall = function(ql){
+  fp = sapply(ql, "[[", 2)
+  tp = sapply(ql, "[[", 1) 
+  fn = sapply(ql, "[[", 4)
+  tn = sapply(ql, "[[", 3)
+  tp/(tp + fn)
 }
 
 extractN = function(ql){
