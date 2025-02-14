@@ -11,10 +11,6 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 
-library(hdi)
-library(ggsci)
-library(tidyverse)
-library(patchwork)
 source("Functions.R")
 data(riboflavin)
 X = data.matrix(riboflavin$x)
