@@ -5,7 +5,7 @@ This repository contains code to reproduce results as given in the paper "Data-A
 ## Simulations
 We provide the four reproducible simulation results in "Artificial-Simulations.R", "Riboflavin-Simulations.R", "Proteomics-Simulation.R", and FDR-Simulations.R. Note that running all four scripts will take at least 48 hours without parallelisation. Therefore we also provide the .Rdata files, which can be found in the "Data" folder.
 
-To reproduce the figures, we provide an example given in "Example-Figure-Code.R".
+To reproduce the figures, we provide RData files in the "Data" folder, and also provide code in their respective scripts. I.e. to reproduce figures in the Proteomics simulations, the code are found at the end of "Proteomics-Simulation.R".
 
 All of these scripts require the use of user-defined functions given in "Functions.R".
 

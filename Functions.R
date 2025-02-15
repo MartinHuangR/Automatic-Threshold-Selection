@@ -135,6 +135,9 @@ simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
        "Adaptive Exclusion Probability" = mix_exclusion)
 }
 
+exclusion = function(x){
+  x[10,] |> unlist() |> as.vector()
+}
 
 convert = function(s){
   return((as.vector(s$max) |> sort(decreasing = T))*100)
@@ -511,6 +514,272 @@ combine = function(a,b,c,d = NULL, ref, ribo = F, filtered = NULL){
               b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
     return(data.frame(r))
   }
+}
+
+combineN = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
+  if (is.null(filtered) == T){
+    filtered = c("ATS", "Exclusion ATS", "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "LASSO MIN")
+  }
+  
+  dimension = c("n = 20, p = 1000, active = 2",
+                "n = 100, p = 500, active = 10",
+                "n = 200, p = 200, active = 20",
+                "n = 500, p = 100, active = 20")
+  labels  = c("(I):~n==20*`,`~p==1000*`,`~`|`*beta[S]*`|`==2",
+              "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
+              "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
+              "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
+  SNR = c(10,5,3, 1)
+  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  
+  if (ribo == F){
+    r = rbind(a |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+              b |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+              c |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+              d |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+    r$Method = as.character(r$Method)
+    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+    r$Method[r$Method == "Exclusion ATS"] = "EATS"
+    r$Method[r$Method == "All"] = "ATS"
+    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+      mutate(Dimension = factor(Dimension, labels = labels[ref]),
+             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
+                          labels = c(SNRlabels[1],
+                                     SNRlabels[2],
+                                     SNRlabels[3],
+                                     SNRlabels[4])))
+    return(r)
+  }else if (ribo == T){
+    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
+              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
+    return(data.frame(r))
+  }
+}
+
+totplotN = function(TOT, lim = max(TOT$NN)){
+  str = unique(TOT$Dimension) |> as.character() |> strsplit(split = "|")
+  active = numeric(length(str))
+  for (i in 1:length(str)){
+    if (str[[i]] |> last() == 0){
+      active[i] = paste(str[[i]] |> nth(-2), str[[i]] |> last(), sep = "") |> as.numeric()
+    }else{
+      active[i] = as.numeric(str[[i]] |> last())
+    }
+  }
+  
+  TOTdummy = TOT |> group_by(Dimension) |> summarise(active = mean(NN))
+  TOTdummy$active = active
+  ggplot(TOT,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+    facet_grid(Dimension ~SNR, labeller = label_parsed) +
+    ylab("Variables Selected") + 
+    geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
+    coord_cartesian(ylim = c(0, lim)) + 
+    # facet_wrap(~Dimension, ncol = 4) + 
+    theme_few_grid(base_size = 20) +
+    xlab(element_blank()) + 
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+          strip.text.x = element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+  
+  
+}
+
+totplotNnoaxis = function(TOT, lim = max(TOT$NN)){
+  str = unique(TOT$Dimension) |> as.character() |> strsplit(split = "|")
+  active = numeric(length(str))
+  for (i in 1:length(str)){
+    if (str[[i]] |> last() == 0){
+      active[i] = paste(str[[i]] |> nth(-2), str[[i]] |> last(), sep = "") |> as.numeric()
+    }else{
+      active[i] = as.numeric(str[[i]] |> last())
+    }
+  }
+  
+  # just a trick to get it into a nice dataframe. dont actulaly care about mean
+  TOTdummy = TOT |> group_by(Dimension) |> summarise(active = mean(NN))
+  TOTdummy$active = active
+  # TOT = TOT[!TOT$Method %in% c("LASSO 1SE", "LASSO MIN"),]
+  ggplot(TOT,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+    facet_grid(Dimension ~SNR, labeller = label_parsed) +
+    ylab("Variables Selected") +
+    geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
+    coord_cartesian(ylim = c(0, lim)) + 
+    # facet_wrap(~Dimension, ncol = 4) + 
+    theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x= element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+  
+  
+}
+
+combineRecall = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
+  if (is.null(filtered) == T){
+    filtered = c("All", "Quarter Adaptive 95%",
+                 "Quarter Adaptive 99%", "Quarter Shuffle 95%", "Shuffle 95%",
+                 "Shuffle Weighted", "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "LASSO MIN")
+  }
+  
+  dimension = c("n = 20, p = 1000, active = 2",
+                "n = 100, p = 500, active = 10",
+                "n = 200, p = 200, active = 20",
+                "n = 500, p = 100, active = 20")
+  labels  = c("(I):~n==20*`,`~p==1000*`,`~`|`*beta[S]*`|`==2",
+              "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
+              "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
+              "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
+  SNR = c(10,5,3, 1)
+  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  
+  if (ribo == F){
+    r = rbind(a |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+              b |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+              c |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+              d |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+    r$Method = as.character(r$Method)
+    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+    r$Method[r$Method == "Exclusion ATS"] = "EATS"
+    r$Method[r$Method == "All"] = "ATS"
+    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+      mutate(Dimension = factor(Dimension, labels = labels[ref]),
+             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
+                          labels = c(SNRlabels[1],
+                                     SNRlabels[2],
+                                     SNRlabels[3],
+                                     SNRlabels[4])))
+    return(r)
+  }else if (ribo == T){
+    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
+              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
+    return(data.frame(r))
+  }
+}
+
+totplotRecall = function(TOT){
+  ggplot(TOT,aes(x = Method, y = Recall, fill = Method)) + geom_boxplot() +
+    facet_grid(Dimension ~SNR, labeller = label_parsed, scales = "free_y") +
+    ylab("Recall") + 
+    theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+          strip.text.x = element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+}
+
+combinePrecision = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
+  if (is.null(filtered) == T){
+    filtered = c("All", "Quarter Adaptive 95%",
+                 "Quarter Adaptive 99%", "Quarter Shuffle 95%", "Shuffle 95%",
+                 "Shuffle Weighted", "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "LASSO MIN")
+  }
+  
+  dimension = c("n = 20, p = 1000, active = 2",
+                "n = 100, p = 500, active = 10",
+                "n = 200, p = 200, active = 20",
+                "n = 500, p = 100, active = 20")
+  labels  = c("(I):~n==20*`,`~p==1000*`,`~`|`*beta[S]*`|`==2",
+              "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
+              "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
+              "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
+  SNR = c(10,5,3, 1)
+  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  
+  if (ribo == F){
+    r = rbind(a |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+              b |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+              c |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+              d |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+    r$Method = as.character(r$Method)
+    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+    r$Method[r$Method == "Exclusion ATS"] = "EATS"
+    r$Method[r$Method == "All"] = "ATS"
+    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+      mutate(Dimension = factor(Dimension, labels = labels[ref]),
+             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
+                          labels = c(SNRlabels[1],
+                                     SNRlabels[2],
+                                     SNRlabels[3],
+                                     SNRlabels[4])))
+    return(r)
+  }else if (ribo == T){
+    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
+              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
+    return(data.frame(r))
+  }
+}
+
+totplotPrecision = function(TOT){
+  ggplot(TOT,aes(x = Method, y = Precision, fill = Method)) + geom_boxplot() +
+    facet_wrap(Dimension ~SNR, labeller = label_parsed, ncol = 4) +
+    ylab("Recall") + 
+    theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+}
+
+prplot1 = function(recall, precision, recall1, precision1){
+  r = ggplot(recall, aes(x = Method, y = Recall, fill = Method)) +
+    geom_boxplot() + facet_grid(Dimension~SNR, labeller = label_parsed) +
+    ylab("Recall") + theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x= element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+  
+  p = ggplot(precision, aes(x = Method, y = Precision, fill = Method)) +
+    geom_boxplot() + facet_grid(Dimension~SNR, labeller = label_parsed) +
+    ylab("Precision") + theme_few_grid(base_size = 20) +
+    xlab(element_blank()) + 
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_blank(),
+          strip.text.x = element_blank(),
+          axis.ticks.x = element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))                    
+  
+  rr = ggplot(recall1, aes(x = Method, y = Recall, fill = Method)) +
+    geom_boxplot() + facet_grid(Dimension~SNR, labeller = label_parsed) +
+    ylab("Recall") + theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x= element_blank(),
+          strip.text.x = element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+  
+  pp = ggplot(precision1, aes(x = Method, y = Precision, fill = Method)) +
+    geom_boxplot() + facet_grid(Dimension~SNR, labeller = label_parsed) +
+    ylab("Precision") + theme_few_grid(base_size = 20) +
+    stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+    stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+    theme(legend.position = "none",
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+          strip.text.x = element_blank()) + 
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))                    
+  library(patchwork)
+  
+  r/p/rr/pp
 }
 
 
