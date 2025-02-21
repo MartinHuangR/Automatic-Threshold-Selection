@@ -15,10 +15,10 @@ source("Functions.R")
 
 
 # Each Rdata file contains 4 SNRs for their respective simulation.
-load("Data/S1.Rdata") 
-load("Data/S2.Rdata")
-load("Data/S3.Rdata")
-load("Data/S4.Rdata")
+# load("Data/S1.Rdata") 
+# load("Data/S2.Rdata")
+# load("Data/S3.Rdata")
+# load("Data/S4.Rdata")
 
 
 source("Functions.R")
@@ -127,6 +127,11 @@ set.seed(1)
 n = 500; p = 100; active = 20; repeats = 1000; snr = 1
 true = c(rep(1, active), rep(0,p - active ))
 S4.1hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+
+save(S1.10hard, S1.5hard, S1.3hard, S1.1hard, file = paste0(Sys.Date(), "_S1.RData"))
+save(S2.10hard, S2.5hard, S2.3hard, S2.1hard, file = paste0(Sys.Date(), "_S2.RData"))
+save(S3.10hard, S3.5hard, S3.3hard ,S3.1hard, file = paste0(Sys.Date(), "_S3.RData"))
+save(S4.10hard, S4.5hard, S4.3hard, S4.1hard, file = paste0(Sys.Date(), "_S4.RData"))
 
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
 filtered = c("ATS", "Exclusion ATS",

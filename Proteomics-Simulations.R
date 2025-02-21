@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 5 Proteomics                          #
+# R-code to reproduce Section 4 Proteomics                          #
 # in the paper: Data-Adaptive and Automatic Stable Threshold        #
 # Calibration for Stability Selection in Penalised Regression       #
 #                       (Huang et al. 2024)                         #                                     
@@ -43,9 +43,12 @@ beta = c(rep(1,4), rep(0, ncol(X) - active))
 true = c(rep(1, active),rep(0,ncol(X) - active))
 pro4.10 = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
 
+save(pro9.5, pro9.10, file = paste0(Sys.Date(), "_pro9.RData"))
+save(pro4.5, pro4.10, file = paste0(Sys.Date(), "_pro4.RData"))
+
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
-load("Data/pro4.RData")
-load("Data/pro9.RData")
+# load("Data/pro4.RData")
+# load("Data/pro9.RData")
 
 filtered = c("ATS", "Exclusion ATS",
              "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")

@@ -1,5 +1,5 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 5                                     #
+# R-code to reproduce Section 4                                     #
 # in the paper: Data-Adaptive and Automatic Stable Threshold        #
 # Calibration for Stability Selection in Penalised Regression       #
 #                       (Huang et al. 2024)                         #                                     
@@ -47,11 +47,12 @@ beta = c(rep(1,active), rep(0, ncol(X) - active))
 true = c(rep(1, active),rep(0,ncol(X) - active ))
 r7.10.sub = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr))
 
+save(r7.5.sub, r7.10.sub, file = paste0(Sys.Date(), "_r7sub.RData"))
+save(r3.5.sub, r3.10.sub, file = paste0(Sys.Date(), "_r3sub.RData"))
 
-# Figures
-
-load("Data/r7sub.Rdata")
-load("Data/r3sub.Rdata")
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+# load("Data/r7sub.Rdata")
+# load("Data/r3sub.Rdata")
 filtered = c("ATS", "Exclusion ATS",
              "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
 repeats = 1000
