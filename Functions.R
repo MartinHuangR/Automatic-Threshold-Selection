@@ -18,6 +18,7 @@ library(latex2exp)
 library(hdi)
 library(patchwork)
 library(hrbrthemes)
+library(pbapply)
 simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   
   # Ensure SNR
@@ -120,7 +121,6 @@ simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   pred = makePred(nr_selected, X, p)
   scad_acc = acc(pred, true, p)
   
-  print("Computing...") 
   
   # Output
   list("0.75" = q_static_acc,

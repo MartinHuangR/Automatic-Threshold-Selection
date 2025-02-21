@@ -30,25 +30,25 @@ set.seed(1)
 n = 20; p = 1000; active = 2; repeats = 1000; snr = 10
 d = gendata(n = n, p = p, active = active)
 true = c(rep(1, active), rep(0,p-active))
-S1.10hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S1.10hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 1: SNR = 5
 set.seed(1)
 n = 20; p = 1000; active = 2; repeats = 1000; snr = 5
 true = c(rep(1, active), rep(0,p - active))
-S1.5hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S1.5hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 1: SNR = 3
 set.seed(1)
 n = 20; p = 1000; active = 2; repeats = 1000;  snr = 3
 true = c(rep(1, active), rep(0,p - active ))
-S1.3hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S1.3hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 1: SNR = 1
 set.seed(1)
 n = 20; p = 1000; active = 2; repeats = 1000; snr = 1
 true = c(rep(1, active), rep(0,p - active ))
-S1.1hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S1.1hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 
 # Simulation 2: SNR = 10
@@ -56,25 +56,25 @@ set.seed(1)
 n = 100; p = 500; active = 10; repeats = 1000; snr = 10
 true = c(rep(1, active), rep(0,p - active ))
 d = gendata(n = n, p = p, active = active)
-S2.10hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S2.10hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 4: SNR = 5
 set.seed(1)
 n = 100; p = 500; active = 10; repeats = 1000; snr = 5
 true = c(rep(1, active), rep(0,p - active ))
-S2.5hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S2.5hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 4: SNR = 3
 set.seed(1)
 n = 100; p = 500; active = 10; repeats = 1000; snr = 3
 true = c(rep(1, active), rep(0,p - active ))
-S2.3hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S2.3hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 4: SNR = 1
 set.seed(1)
 n = 100; p = 500; active = 10; repeats = 1000; snr = 1
 true = c(rep(1, active), rep(0,p - active ))
-S2.1hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S2.1hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 
 # Simulation 3: SNR = 10
@@ -82,25 +82,25 @@ set.seed(1)
 n = 200; p = 200; active = 20; repeats = 1000;   snr = 10
 true = c(rep(1, active), rep(0,p - active ))
 d = gendata(n = n, p = p, active = active)
-S3.10hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S3.10hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 2: SNR = 5
 set.seed(1)
 n = 200; p = 200; active = 20; repeats = 1000;  snr = 5
 true = c(rep(1, active), rep(0,p - active))
-S3.5hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S3.5hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 2: SNR = 3
 set.seed(1)
 n = 200; p = 200; active = 20; repeats = 1000;  snr = 3
 true = c(rep(1, active), rep(0,p - active ))
-S3.3hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S3.3hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 2: SNR = 1
 set.seed(1)
 n = 200; p = 200; active = 20; repeats = 1000; snr = 1
 true = c(rep(1, active), rep(0,p - active ))
-S3.1hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S3.1hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 
 # Simulation 4: SNR = 10
@@ -108,25 +108,25 @@ set.seed(1)
 n = 500; p = 100; active = 20; repeats = 1000; snr = 10
 true = c(rep(1, active), rep(0,p - active ))
 d = gendata(n = n, p = p, active = active)
-S4.10hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S4.10hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 3: SNR = 5
 set.seed(1)
 n = 500; p = 100; active = 20; repeats = 1000; snr = 5
 true = c(rep(1, active), rep(0,p - active ))
-S4.5hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S4.5hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 3: SNR = 3
 set.seed(1)
 n = 500; p = 100; active = 20; repeats = 1000; snr = 3
 true = c(rep(1, active), rep(0,p - active ))
-S4.3hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S4.3hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 # Simulation 3: SNR = 1
 set.seed(1)
 n = 500; p = 100; active = 20; repeats = 1000; snr = 1
 true = c(rep(1, active), rep(0,p - active ))
-S4.1hard = replicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
+S4.1hard = pbreplicate(repeats, simulationATS(X = d$X, beta = d$beta, true = true, p = p, snr = snr))
 
 save(S1.10hard, S1.5hard, S1.3hard, S1.1hard, file = paste0(Sys.Date(), "_S1.RData"))
 save(S2.10hard, S2.5hard, S2.3hard, S2.1hard, file = paste0(Sys.Date(), "_S2.RData"))

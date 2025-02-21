@@ -22,26 +22,26 @@ set.seed(1)
 active = 9; repeats = 1000; snr = 5; p = ncol(X)
 beta = c(rep(1,active), rep(0, ncol(X) - active)) 
 true = c(rep(1, active),rep(0,ncol(X) - active))
-pro9.5 = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
+pro9.5 = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
 
 
 active = 9; repeats = 1000; snr = 10; p = ncol(X)
 beta = c(rep(1,9), rep(0, ncol(X) - active)) 
 true = c(rep(1, active),rep(0,ncol(X) - active))
-pro9.10 = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
+pro9.10 = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
 
 
 active = 4; repeats = 1000; snr = 5; p = ncol(X)
 beta = c(rep(1,4), rep(0, ncol(X) - active)) 
 true = c(rep(1, active),rep(0,ncol(X) - active))
-pro4.5 = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
+pro4.5 = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
 
 
 
 active = 4; repeats = 1000; snr = 10; p = ncol(X)
 beta = c(rep(1,4), rep(0, ncol(X) - active)) 
 true = c(rep(1, active),rep(0,ncol(X) - active))
-pro4.10 = replicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
+pro4.10 = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr, gaussian.knockoffs = T))
 
 save(pro9.5, pro9.10, file = paste0(Sys.Date(), "_pro9.RData"))
 save(pro4.5, pro4.10, file = paste0(Sys.Date(), "_pro4.RData"))
