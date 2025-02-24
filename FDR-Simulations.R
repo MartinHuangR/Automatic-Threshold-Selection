@@ -1,18 +1,18 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 4 FDR Study with Artificial Data      #
+# R-code to reproduce Section 4.4                                   #
 # in the paper: Data-Adaptive Automatic Threshold Calibration       #
 #  for Stability Selection (Huang et al. 2025)                      #
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
-#                                                                   #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
-load("Data/FDR.I.RData")
-load("Data/FDR.II.RData")
-load("Data/FDR.III.RData")
-load("Data/FDR.IV.RData")
+
+# load("Data/FDR.I.RData")
+# load("Data/FDR.II.RData")
+# load("Data/FDR.III.RData")
+# load("Data/FDR.IV.RData")
 
 # Setting 1
 set.seed(1)
@@ -137,7 +137,9 @@ set.seed(1)
 n = 500; p = 100; active = 10; snr = 5
 fIVs5e5 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 5, LOOPS = 1000)
 
-# Table Output
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+# Table
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
 fI = rbind(fIs10e2, fIs5e2, fIs5e5, fIs10e5, fIs5e10, fIs10e10)  |> mutate(Setting = "I")
 fII = rbind(fIIs10e2, fIIs5e2, fIIs5e5, fIIs10e5, fIIs5e10, fIIs10e10) |> mutate(Setting = "II")
 fIII = rbind(fIIIs10e2, fIIIs5e2, fIIIs5e5, fIIIs10e5, fIIIs5e10, fIIIs10e10) |> mutate(Setting = "III")

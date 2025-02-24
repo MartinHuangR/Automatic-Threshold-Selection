@@ -1,17 +1,19 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code to reproduce Section 4                                     #
-# in the paper: Data-Adaptive and Automatic Stable Threshold        #
-# Calibration for Stability Selection in Penalised Regression       #
-#                       (Huang et al. 2024)                         #                                     
+# R-code to reproduce Section 4.3                                   #
+# in the paper: Data-Adaptive Automatic Threshold Calibration       #
+#  for Stability Selection (Huang et al. 2025)                      #                                    
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
-#                                                                   #          
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 
 source("Functions.R")
+
+# load("Data/r7sub.Rdata")
+# load("Data/r3sub.Rdata")
+
 data(riboflavin)
 X = data.matrix(riboflavin$x)
 y = riboflavin$y
@@ -50,17 +52,11 @@ r7.10.sub = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, 
 save(r7.5.sub, r7.10.sub, file = paste0(Sys.Date(), "_r7sub.RData"))
 save(r3.5.sub, r3.10.sub, file = paste0(Sys.Date(), "_r3sub.RData"))
 
-#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
-# load("Data/r7sub.Rdata")
-# load("Data/r3sub.Rdata")
-filtered = c("ATS", "Exclusion ATS",
-             "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
-repeats = 1000
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+# Figures
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
 
-
-
-
-
+# MCC
 r3.5.sub.df = r3.5.sub |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==5")
 r3.10.sub.df = r3.10.sub |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==10")
 r3sub = rbind(r3.5.sub.df,r3.10.sub.df)
@@ -83,7 +79,7 @@ r7sub = data.frame(r7sub) |> mutate(Dimension = "n==71*`,`~p==20*`,`~`|`*beta[S]
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 
-
+# MCC
 r3subplot = ggplot(r3sub,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
   facet_grid(Dimension ~SNR, labeller = label_parsed) +
   theme_few_grid(base_size = 20) +
@@ -113,7 +109,7 @@ r7subplot = ggplot(r7sub,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot
         strip.text.x = element_blank())+
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
-
+# Variables Selected
 r3.5.sub.df.N = r3.5.sub |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==5")
 r3.10.sub.df.N = r3.10.sub |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==10")
 r3subN = rbind(r3.5.sub.df.N,r3.10.sub.df.N)
@@ -124,8 +120,6 @@ r3subN$Method[r3subN$Method == "All"] = "ATS"
 r3subN$Method = factor(r3subN$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
 r3subN = data.frame(r3subN) |> mutate(Dimension = "n==71*`,`~p==20*`,`~`|`*beta[S]*`|`==3") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
-
-
 
 r7.5.sub.df.N = r7.5.sub |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==5")
 r7.10.sub.df.N = r7.10.sub |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==10")
@@ -156,7 +150,6 @@ r3nplot = ggplot(r3subN,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(a
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
 
-
 r7nplot = ggplot(r7subN,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
   facet_grid(Dimension ~SNR, labeller = label_parsed) +
   ylab("Variables Selected") + 
@@ -170,13 +163,10 @@ r7nplot = ggplot(r7subN,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(a
         strip.text.x = element_blank()) +
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
-library(patchwork)
-
 r3subplot/r7subplot/r3nplot/r7nplot
 
 
-# PRECISION AND RECALL
-
+# Precision
 r3.5.sub.df.Precision = r3.5.sub |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==5")
 r3.10.sub.df.Precision = r3.10.sub |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==10")
 r3Precision = rbind(r3.5.sub.df.Precision,r3.10.sub.df.Precision)
@@ -240,7 +230,7 @@ r3Recall = data.frame(r3Recall) |> mutate(Dimension = "n==71*`,`~p==20*`,`~`|`*b
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 
-
+# Recall
 r7.5.sub.df.Recall = r7.5.sub |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==5")
 r7.10.sub.df.Recall = r7.10.sub |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==10")
 r7Recall = rbind(r7.5.sub.df.Recall,r7.10.sub.df.Recall)
@@ -251,7 +241,6 @@ r7Recall$Method[r7Recall$Method == "All"] = "ATS"
 r7Recall$Method = factor(r7Recall$Method, levels = c("ATS", "Exclusion ATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
 r7Recall = data.frame(r7Recall) |> mutate(Dimension = "n==71*`,`~p==20*`,`~`|`*beta[S]*`|`==7") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
-
 
 pr = rbind(r7Recall, r3Recall)
 pp = rbind(r7Precision, r3Precision)
@@ -274,6 +263,5 @@ prplot2 = ggplot(pp,aes(x = Method, y = Precision, fill = Method)) + geom_boxplo
   theme(legend.position = "none",axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
+# Precision and Recall Combined
 prplot1|prplot2
-
-##############################################################################################################

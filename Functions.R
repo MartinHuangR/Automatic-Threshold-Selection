@@ -19,6 +19,11 @@ library(hdi)
 library(patchwork)
 library(hrbrthemes)
 library(pbapply)
+
+filtered = c("ATS", "Exclusion ATS",
+             "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
+repeats = 1000
+
 simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   
   # Ensure SNR
@@ -446,7 +451,6 @@ theme_few_grid = function (base_size = 12, base_family = "")
 totplotnoaxis = function(TOT){
   ggplot(TOT,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
     facet_grid(Dimension ~SNR, labeller = label_parsed) +
-    # facet_wrap(~Dimension, ncol = 4) + 
     theme_few_grid(base_size = 20) +
     stat_summary(fun ="mean", shape = 5, size = 0.5) + 
     stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
@@ -462,7 +466,6 @@ totplotnoaxis = function(TOT){
 totplot = function(TOT){
   ggplot(TOT,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
     facet_grid(Dimension ~SNR, labeller = label_parsed) +
-    # facet_wrap(~Dimension, ncol = 4) + 
     theme_few_grid(base_size = 20) +
     stat_summary(fun ="mean", shape = 5, size = 0.5) + 
     stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
@@ -567,7 +570,6 @@ totplotN = function(TOT, lim = max(TOT$NN)){
       active[i] = as.numeric(str[[i]] |> last())
     }
   }
-  
   TOTdummy = TOT |> group_by(Dimension) |> summarise(active = mean(NN))
   TOTdummy$active = active
   ggplot(TOT,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -575,7 +577,6 @@ totplotN = function(TOT, lim = max(TOT$NN)){
     ylab("Variables Selected") + 
     geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
     coord_cartesian(ylim = c(0, lim)) + 
-    # facet_wrap(~Dimension, ncol = 4) + 
     theme_few_grid(base_size = 20) +
     xlab(element_blank()) + 
     stat_summary(fun ="mean", shape = 5, size = 0.5) + 
@@ -584,8 +585,6 @@ totplotN = function(TOT, lim = max(TOT$NN)){
           axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
           strip.text.x = element_blank()) + 
     scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-  
-  
 }
 
 totplotNnoaxis = function(TOT, lim = max(TOT$NN)){
@@ -598,17 +597,13 @@ totplotNnoaxis = function(TOT, lim = max(TOT$NN)){
       active[i] = as.numeric(str[[i]] |> last())
     }
   }
-  
-  # just a trick to get it into a nice dataframe. dont actulaly care about mean
   TOTdummy = TOT |> group_by(Dimension) |> summarise(active = mean(NN))
   TOTdummy$active = active
-  # TOT = TOT[!TOT$Method %in% c("LASSO 1SE", "LASSO MIN"),]
   ggplot(TOT,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
     facet_grid(Dimension ~SNR, labeller = label_parsed) +
     ylab("Variables Selected") +
     geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
     coord_cartesian(ylim = c(0, lim)) + 
-    # facet_wrap(~Dimension, ncol = 4) + 
     theme_few_grid(base_size = 20) +
     stat_summary(fun ="mean", shape = 5, size = 0.5) + 
     stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
@@ -617,8 +612,6 @@ totplotNnoaxis = function(TOT, lim = max(TOT$NN)){
           axis.text.x=element_blank(),
           axis.ticks.x= element_blank()) + 
     scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-  
-  
 }
 
 combineRecall = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){

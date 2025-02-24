@@ -1,15 +1,14 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# R-code functions to produce Section 4 Artificial Simulations      #
+# R-code functions to produce Section 4.1                           #
 # in the paper: Data-Adaptive Automatic Threshold Calibration       #
 #  for Stability Selection (Huang et al. 2025)                      #
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #  
+#                                                                   #
 # Note: This will take more than 24 hours without parallelisation.  #
 #       I have provided the Rdata file for my simulations.          #
-#       Please see Example-Figure-Code.R for code to visualise      #
-#       results                                                     #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
 
@@ -19,11 +18,6 @@ source("Functions.R")
 # load("Data/S2.Rdata")
 # load("Data/S3.Rdata")
 # load("Data/S4.Rdata")
-
-
-source("Functions.R")
-
-set.seed(1)
 
 # Simulation 1: SNR = 10
 set.seed(1)
@@ -133,7 +127,11 @@ save(S2.10hard, S2.5hard, S2.3hard, S2.1hard, file = paste0(Sys.Date(), "_S2.RDa
 save(S3.10hard, S3.5hard, S3.3hard ,S3.1hard, file = paste0(Sys.Date(), "_S3.RData"))
 save(S4.10hard, S4.5hard, S4.3hard, S4.1hard, file = paste0(Sys.Date(), "_S4.RData"))
 
+
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+# Figures
+#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
+
 filtered = c("ATS", "Exclusion ATS",
              "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
 repeats = 1000
@@ -145,7 +143,8 @@ c44hard = combine(S4.10hard, S4.5hard, S4.3hard, S4.1hard, 4, filtered = filtere
 
 c1hard = rbind(c11hard,c22hard) |> totplotnoaxis()
 c2hard = rbind(c33hard,c44hard) |> totplot()
-library(patchwork)
+
+# MCC
 c1hard/c2hard
 
 
@@ -159,7 +158,7 @@ c44Nhard = combineN(S4.10hard, S4.5hard, S4.3hard, S4.1hard, 4, filtered = filte
 c1nhard = rbind(c11Nhard,c22Nhard) |> totplotNnoaxis(lim = 40)
 c2nhard = rbind(c33Nhard,c44Nhard) |> totplotN(lim = 60)
 
-library(patchwork)
+# Variables Selected
 c1nhard/c2nhard
 
 
