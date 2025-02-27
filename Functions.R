@@ -19,6 +19,7 @@ library(hdi)
 library(patchwork)
 library(hrbrthemes)
 library(pbapply)
+library(latex2exp)
 
 filtered = c("ATS", "Exclusion ATS",
              "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
@@ -167,8 +168,6 @@ acc = function(pred, true, p){
   list("TP" = tp, "FP" = fp, "TN" = tn, "FN" = fn)
 }
 
-
-
 extractMCC = function(ql){
   tp = sapply(ql, "[[", 1) 
   fp = sapply(ql, "[[", 2)
@@ -184,7 +183,6 @@ extractMCC = function(ql){
   MCC
 }
 
-
 prep = function(l){
   tp = l[["TP"]]
   fp = l[["FP"]]
@@ -192,7 +190,6 @@ prep = function(l){
   fn = l[["FN"]]
   c(tp,fp,tn,fn)
 }
-
 
 cleanMCC = function(x, repeats = 1000){
   z0.75 = lapply(x[1,], prep)
@@ -229,7 +226,6 @@ cleanMCC = function(x, repeats = 1000){
                                                  "LASSO 1SE", "LASSO MIN", "Knockoff", "SCAD"))
   MCCdf
 }
-
 
 cleanN = function(x, repeats = 1000){
   z0.75 = lapply(x[1,], prep)
@@ -344,7 +340,6 @@ extractPrecision = function(ql){
   tp = sapply(ql, "[[", 1) 
   fn = sapply(ql, "[[", 4)
   tn = sapply(ql, "[[", 3)
-  
   ans = c()
   for (i in 1:length(tn)){
     if ((tp[i] == 0 & fp[i] > 0) | (tp[i] == 0 & fn[i] > 0)){
@@ -389,7 +384,6 @@ int getR(const NumericVector& d) {
 }
 ')
 
-
 ### Generating Data ###
 extend <- function(alphabet) function(i) {
   base10toA <- function(n, A) {
@@ -400,7 +394,6 @@ extend <- function(alphabet) function(i) {
   }   
   vapply(i-1L, base10toA, character(1L), alphabet)
 }
-
 
 gendata = function(n, p, active){
   # Add letters as variable names
@@ -476,8 +469,7 @@ totplot = function(TOT){
     scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 }
 
-
-combine = function(a,b,c,d = NULL, ref, ribo = F, filtered = NULL){
+combine = function(a,b,c,d = NULL, ref, filtered = NULL){
   if (is.null(filtered) == T){
     filtered = c("All", "Quarter Adaptive 95%",
                  "Quarter Adaptive 99%", "Quarter Shuffle 95%", "Shuffle 95%",
@@ -491,35 +483,28 @@ combine = function(a,b,c,d = NULL, ref, ribo = F, filtered = NULL){
               "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
               "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
               "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
-  SNR = c(10,5,3, 1)
-  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
-  if (ribo == F){
-    r = rbind(a |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
-              b |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
-              c |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
-              d |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
-    r$Method = as.character(r$Method)
-    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
-    r$Method[r$Method == "Exclusion ATS"] = "EATS"
-    r$Method[r$Method == "All"] = "ATS"
-    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
-      mutate(Dimension = factor(Dimension, labels = labels[ref]),
-             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
-                          labels = c(SNRlabels[1],
-                                     SNRlabels[2],
-                                     SNRlabels[3],
-                                     SNRlabels[4])))
-    
-    return(r)
-  }else if (ribo == T){
-    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
-              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
-    return(data.frame(r))
-  }
+  SNR = c(0.5,1,2, 3)
+  SNRlabels = c("~SNR==0.5", "~SNR==1", "~SNR==2", "~SNR==3")
+  r = rbind(a |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+            b |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+            c |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+            d |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+  r$Method = as.character(r$Method)
+  r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+  r$Method[r$Method == "Exclusion ATS"] = "EATS"
+  r$Method[r$Method == "All"] = "ATS"
+  r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+  r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+    mutate(Dimension = factor(Dimension, labels = labels[ref]),
+           SNR = factor(SNR, levels = c("0.5", "1", "2", "3"),
+                        labels = c(SNRlabels[1],
+                                   SNRlabels[2],
+                                   SNRlabels[3],
+                                   SNRlabels[4])))
+  return(r)
 }
 
-combineN = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
+combineN = function(a,b,c = NULL,d, ref,filtered = NULL){
   if (is.null(filtered) == T){
     filtered = c("ATS", "Exclusion ATS", "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "LASSO MIN")
   }
@@ -532,32 +517,26 @@ combineN = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
               "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
               "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
               "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
-  SNR = c(10,5,3, 1)
-  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
-  
-  if (ribo == F){
-    r = rbind(a |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
-              b |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
-              c |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
-              d |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
-    r$Method = as.character(r$Method)
-    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
-    r$Method[r$Method == "Exclusion ATS"] = "EATS"
-    r$Method[r$Method == "All"] = "ATS"
-    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
-      mutate(Dimension = factor(Dimension, labels = labels[ref]),
-             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
-                          labels = c(SNRlabels[1],
-                                     SNRlabels[2],
-                                     SNRlabels[3],
-                                     SNRlabels[4])))
-    return(r)
-  }else if (ribo == T){
-    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
-              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
-    return(data.frame(r))
-  }
+  SNR = c(0.5,1,2, 3)
+  SNRlabels = c("~SNR==0.5", "~SNR==1", "~SNR==2", "~SNR==3")
+
+  r = rbind(a |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+            b |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+            c |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+            d |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+  r$Method = as.character(r$Method)
+  r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+  r$Method[r$Method == "Exclusion ATS"] = "EATS"
+  r$Method[r$Method == "All"] = "ATS"
+  r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+  r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+    mutate(Dimension = factor(Dimension, labels = labels[ref]),
+           SNR = factor(SNR, levels = c("0.5", "1", "2", "3"),
+                        labels = c(SNRlabels[1],
+                                   SNRlabels[2],
+                                   SNRlabels[3],
+                                   SNRlabels[4])))
+  return(r)
 }
 
 totplotN = function(TOT, lim = max(TOT$NN)){
@@ -629,32 +608,26 @@ combineRecall = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
               "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
               "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
               "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
-  SNR = c(10,5,3, 1)
-  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  SNR = c(0.5,1,2,3)
+  SNRlabels = c("~SNR==0.5", "~SNR==1", "~SNR==2", "~SNR==3")
   
-  if (ribo == F){
-    r = rbind(a |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
-              b |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
-              c |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
-              d |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
-    r$Method = as.character(r$Method)
-    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
-    r$Method[r$Method == "Exclusion ATS"] = "EATS"
-    r$Method[r$Method == "All"] = "ATS"
-    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
-      mutate(Dimension = factor(Dimension, labels = labels[ref]),
-             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
-                          labels = c(SNRlabels[1],
-                                     SNRlabels[2],
-                                     SNRlabels[3],
-                                     SNRlabels[4])))
-    return(r)
-  }else if (ribo == T){
-    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
-              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
-    return(data.frame(r))
-  }
+  r = rbind(a |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+            b |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+            c |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+            d |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+  r$Method = as.character(r$Method)
+  r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+  r$Method[r$Method == "Exclusion ATS"] = "EATS"
+  r$Method[r$Method == "All"] = "ATS"
+  r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+  r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+    mutate(Dimension = factor(Dimension, labels = labels[ref]),
+           SNR = factor(SNR, levels = c("0.5", "1", "2", "3"),
+                        labels = c(SNRlabels[1],
+                                   SNRlabels[2],
+                                   SNRlabels[3],
+                                   SNRlabels[4])))
+  return(r)
 }
 
 totplotRecall = function(TOT){
@@ -685,32 +658,26 @@ combinePrecision = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
               "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
               "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
               "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
-  SNR = c(10,5,3, 1)
-  SNRlabels = c("~SNR==10", "~SNR==5", "~SNR==3", "~SNR==1")
+  SNR = c(0.5,1,2, 3)
+  SNRlabels = c("~SNR==0.5", "~SNR==1", "~SNR==2", "~SNR==3")
   
-  if (ribo == F){
-    r = rbind(a |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
-              b |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
-              c |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
-              d |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
-    r$Method = as.character(r$Method)
-    r$Method[r$Method == "LASSO 1SE"] = "LASSO"
-    r$Method[r$Method == "Exclusion ATS"] = "EATS"
-    r$Method[r$Method == "All"] = "ATS"
-    r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-    r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
-      mutate(Dimension = factor(Dimension, labels = labels[ref]),
-             SNR = factor(SNR, levels = c("10", "5", "3", "1"),
-                          labels = c(SNRlabels[1],
-                                     SNRlabels[2],
-                                     SNRlabels[3],
-                                     SNRlabels[4])))
-    return(r)
-  }else if (ribo == T){
-    r = rbind(a |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1]),
-              b |> clean() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2]))
-    return(data.frame(r))
-  }
+  r = rbind(a |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[1], N = "A"),
+            b |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[2], N = "B"),
+            c |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[3], N = "C"),
+            d |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = SNR[4], N = "C"))
+  r$Method = as.character(r$Method)
+  r$Method[r$Method == "LASSO 1SE"] = "LASSO"
+  r$Method[r$Method == "Exclusion ATS"] = "EATS"
+  r$Method[r$Method == "All"] = "ATS"
+  r$Method = factor(r$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
+  r = data.frame(r) |> mutate(Dimension = dimension[ref]) |>
+    mutate(Dimension = factor(Dimension, labels = labels[ref]),
+           SNR = factor(SNR, levels = c("0.5", "1", "2", "3"),
+                        labels = c(SNRlabels[1],
+                                   SNRlabels[2],
+                                   SNRlabels[3],
+                                   SNRlabels[4])))
+  return(r)
 }
 
 totplotPrecision = function(TOT){
@@ -777,8 +744,6 @@ prplot1 = function(recall, precision, recall1, precision1){
 
 
 ### FDR Function ###
-
-
 fdr = function(X, p, beta, snr, EV, LOOPS = 1000){
   n.selected = false.selections = correct.selections.prop = method = pi = c()
   for (i in 1:LOOPS){
@@ -810,9 +775,7 @@ fdr = function(X, p, beta, snr, EV, LOOPS = 1000){
     EATS =  convert(s)[1:(length(convert(s)))][convert(s)[1:(length(convert(s)))] >= 100*mix_exclusion] 
     if (length(EATS) == 2){EATS = c(EATS, EATS[1])}
     EATSix = EATS |> getR()
-    
     pi.hat = EATS[EATSix]/100
-    
     if (pi.hat <= 0.5){
       s = stabs::stabsel(x = X, y = Y, B = 100,
                          fitfun = stabs::lars.lasso, PFER = EV, cutoff = 0.501,
