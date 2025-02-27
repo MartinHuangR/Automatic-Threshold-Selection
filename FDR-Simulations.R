@@ -108,33 +108,33 @@ fIIIs3e5 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 5, LOOPS = 1000)
 
 # Setting 4
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 1
+n = 500; p = 100; active = 20; snr = 1
 d = gendata(n = n, p = p, active = active)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 1
+n = 500; p = 100; active = 20; snr = 1
 fIVs1e2 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 2, LOOPS = 1000)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 3
+n = 500; p = 100; active = 20; snr = 3
 fIVs3e2 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 2, LOOPS = 1000)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 1
+n = 500; p = 100; active = 20; snr = 1
 d = gendata(n = n, p = p, active = active)
 fIVs1e10 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 10, LOOPS = 1000)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 3
+n = 500; p = 100; active = 20; snr = 3
 fIVs3e10 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 10, LOOPS = 1000)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 1
+n = 500; p = 100; active = 20; snr = 1
 d = gendata(n = n, p = p, active = active)
 fIVs1e5 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 5, LOOPS = 1000)
 
 set.seed(1)
-n = 500; p = 100; active = 10; snr = 3
+n = 500; p = 100; active = 20; snr = 3
 fIVs3e5 = fdr(X = d$X, beta = d$beta, p = p, snr = snr, EV = 5, LOOPS = 1000)
 
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
