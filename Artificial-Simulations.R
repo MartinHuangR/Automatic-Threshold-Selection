@@ -210,3 +210,33 @@ ggplot(excl, aes(x = SNR, y = Eta)) + geom_boxplot(alpha = 0.65) +
   ylab(TeX("Exclusion Probability Threshold $\\eta$")) + 
   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
   theme(legend.position = "none") 
+
+#---#---#---#---#---#---#---#---#---#---#---#---#---#---
+# ATS/EATS Estimated Pi
+
+S1pi = rbind(extractPi(S1.05hard, 0.5, 1),
+             extractPi(S1.1hard, 1, 1),
+             extractPi(S1.2hard, 2, 1),
+             extractPi(S1.3hard, 3, 1))
+
+S2pi = rbind(extractPi(S2.05hard, 0.5, 2),
+             extractPi(S2.1hard, 1, 2),
+             extractPi(S2.2hard, 2, 2),
+             extractPi(S2.3hard, 3, 2))
+
+S3pi = rbind(extractPi(S3.05hard, 0.5, 3),
+             extractPi(S3.1hard, 1, 3),
+             extractPi(S3.2hard, 2, 3),
+             extractPi(S3.3hard, 3, 3))
+
+S4pi = rbind(extractPi(S4.05hard, 0.5, 4),
+             extractPi(S4.1hard, 1, 4),
+             extractPi(S4.2hard, 2, 4),
+             extractPi(S4.3hard, 3, 4))
+
+Spi = rbind(S1pi, S2pi, S3pi, S4pi)
+
+
+ggplot(Spi, aes(x = value, fill = variable)) + geom_density(alpha = 0.7) +
+  facet_grid(dimension~SNR, labeller = label_parsed) + xlab(TeX("Estimated $\\pi$")) + ylab("Frequency") +
+  theme_few_grid(base_size = 20) + scale_fill_manual(values = c("#FC8D62", "#FFD92F")) + labs(fill = "Method")

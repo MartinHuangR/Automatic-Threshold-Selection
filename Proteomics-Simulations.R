@@ -7,7 +7,7 @@
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
 #                                                                   #
-# Note: This will take 3 hours without parallelisation.             #
+# Note: This will take 8 hours without parallelisation.             #
 #       I have provided the Rdata file for my simulations.          #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
@@ -58,7 +58,7 @@ pro9$Method[pro9$Method == "LASSO 1SE"] = "LASSO"
 pro9$Method[pro9$Method == "Exclusion ATS"] = "EATS"
 pro9$Method[pro9$Method == "All"] = "ATS"
 pro9$Method = factor(pro9$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro9 = data.frame(pro9) |> mutate(Dimension = "`|`*beta[S]*`|`==9") |> 
+pro9 = data.frame(pro9) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==9") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro4.1.df = pro4.1 |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -69,7 +69,7 @@ pro4$Method[pro4$Method == "LASSO 1SE"] = "LASSO"
 pro4$Method[pro4$Method == "Exclusion ATS"] = "EATS"
 pro4$Method[pro4$Method == "All"] = "ATS"
 pro4$Method = factor(pro4$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro4 = data.frame(pro4) |> mutate(Dimension = "`|`*beta[S]*`|`==4") |> 
+pro4 = data.frame(pro4) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro9plot = ggplot(pro9,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -107,7 +107,7 @@ pro9N$Method[pro9N$Method == "LASSO 1SE"] = "LASSO"
 pro9N$Method[pro9N$Method == "Exclusion ATS"] = "EATS"
 pro9N$Method[pro9N$Method == "All"] = "ATS"
 pro9N$Method = factor(pro9N$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro9N = data.frame(pro9N) |> mutate(Dimension = "`|`*beta[S]*`|`==9") |> 
+pro9N = data.frame(pro9N) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==9") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro4.1.df.N = pro4.1 |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -118,7 +118,7 @@ pro4N$Method[pro4N$Method == "LASSO 1SE"] = "LASSO"
 pro4N$Method[pro4N$Method == "Exclusion ATS"] = "EATS"
 pro4N$Method[pro4N$Method == "All"] = "ATS"
 pro4N$Method = factor(pro4N$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro4N = data.frame(pro4N) |> mutate(Dimension = "`|`*beta[S]*`|`==4") |> 
+pro4N = data.frame(pro4N) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro9nplot = ggplot(pro9N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -162,7 +162,7 @@ pro4Precision$Method[pro4Precision$Method == "LASSO 1SE"] = "LASSO"
 pro4Precision$Method[pro4Precision$Method == "Exclusion ATS"] = "EATS"
 pro4Precision$Method[pro4Precision$Method == "All"] = "ATS"
 pro4Precision$Method = factor(pro4Precision$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro4Precision = data.frame(pro4Precision) |> mutate(Dimension = "`|`*beta[S]*`|`==4") |> 
+pro4Precision = data.frame(pro4Precision) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro9.1.df.Precision = pro9.1 |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -173,7 +173,7 @@ pro9Precision$Method[pro9Precision$Method == "LASSO 1SE"] = "LASSO"
 pro9Precision$Method[pro9Precision$Method == "Exclusion ATS"] = "EATS"
 pro9Precision$Method[pro9Precision$Method == "All"] = "ATS"
 pro9Precision$Method = factor(pro9Precision$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro9Precision = data.frame(pro9Precision) |> mutate(Dimension = "`|`*beta[S]*`|`==9") |> 
+pro9Precision = data.frame(pro9Precision) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==9") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro4nplotprecision = ggplot(pro4Precision,aes(x = Method, y = Precision, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -210,7 +210,7 @@ pro4Recall$Method[pro4Recall$Method == "LASSO 1SE"] = "LASSO"
 pro4Recall$Method[pro4Recall$Method == "Exclusion ATS"] = "EATS"
 pro4Recall$Method[pro4Recall$Method == "All"] = "ATS"
 pro4Recall$Method = factor(pro4Recall$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro4Recall = data.frame(pro4Recall) |> mutate(Dimension = "`|`*beta[S]*`|`==4") |> 
+pro4Recall = data.frame(pro4Recall) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro9.1.df.Recall = pro9.1 |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -221,7 +221,7 @@ pro9Recall$Method[pro9Recall$Method == "LASSO 1SE"] = "LASSO"
 pro9Recall$Method[pro9Recall$Method == "Exclusion ATS"] = "EATS"
 pro9Recall$Method[pro9Recall$Method == "All"] = "ATS"
 pro9Recall$Method = factor(pro9Recall$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-pro9Recall = data.frame(pro9Recall) |> mutate(Dimension = "`|`*beta[S]*`|`==9") |> 
+pro9Recall = data.frame(pro9Recall) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==9") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pro4nplotRecall = ggplot(pro4Recall,aes(x = Method, y = Recall, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -265,3 +265,14 @@ prplot2 = ggplot(pp,aes(x = Method, y = Precision, fill = Method)) + geom_boxplo
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
 prplot1|prplot2
+
+#---#---#---#---#---#---#---#---#---#---#---#---#---#---
+# ATS/EATS Estimated Pi
+proPi = rbind(extractPi(pro4.1, snr = 1, data = "proteomics", active = 4),
+              extractPi(pro4.3, snr = 3, data = "proteomics", active = 4),
+              extractPi(pro9.1, snr = 1, data = "proteomics", active = 9),
+              extractPi(pro9.3, snr = 3, data = "proteomics", active = 9))
+
+ggplot(proPi, aes(x = value, fill = variable)) + geom_density(alpha = 0.7)  +
+  facet_grid(dimension~SNR, labeller = label_parsed) + xlab(TeX("Estimated $\\pi$")) + ylab("Frequency") +
+  theme_few_grid(base_size = 20) + scale_fill_manual(values = c("#FC8D62", "#FFD92F")) + labs(fill = "Method")

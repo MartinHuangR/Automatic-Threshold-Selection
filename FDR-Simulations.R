@@ -147,7 +147,7 @@ fIV = rbind(fIVs1e2, fIVs3e2, fIVs1e5, fIVs3e5, fIVs1e10, fIVs3e10) |> mutate(Se
 
 f = rbind(fI, fII, fIII, fIV) |> 
   group_by(Setting, snr, EV) |> 
-  summarise(error = 1 - mean(false.selections > EV),
+  summarise(ebs = 1 - mean(false.selections > EV),
             correct.prop = mean(correct.selections.prop),
             avg.selected = mean(n.selected)) |> 
   mutate(correct.prop = round(correct.prop, 2),

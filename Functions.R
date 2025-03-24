@@ -82,6 +82,7 @@ simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   ATS = convert(s)
   if (length(ATS) == 2){ATS = c(ATS, ATS[1])}
   ATS = ATS |> getR()
+  ATS_pi =  sort(s$max, decreasing = T)[ATS]
   ATS_selected = sort(s$max, decreasing = T)[1:ATS] |> names()
   pred = makePred(ATS_selected, X,p)
   ATS_acc = acc(pred, true, p)
@@ -91,6 +92,7 @@ simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
   EATS =  convert(s)[1:(length(convert(s)))][convert(s)[1:(length(convert(s)))] >= 100*mix_exclusion] 
   if (length(EATS) == 2){EATS = c(EATS, EATS[1])}
   EATS = EATS |> getR()
+  EATS_pi = sort(s$max, decreasing = T)[EATS]
   EATS_selected = sort(s$max, decreasing = T)[1:EATS] |> names()
   pred = makePred(EATS_selected, X,p)
   EATS_acc = acc(pred, true, p)
@@ -138,12 +140,67 @@ simulationATS = function(X, true, p, beta,  snr = 10, gaussian.knockoffs = F){
        "LASSO MIN" = lmin_acc,
        "Knockoff" = ko_acc,
        "SCAD" = scad_acc,
-       "Adaptive Exclusion Probability" = mix_exclusion)
+       "Adaptive Exclusion Probability" = mix_exclusion,
+       "EATS Pi" = EATS_pi,
+       "ATS Pi" = ATS_pi)
 }
 
 exclusion = function(x){
-  x[10,] |> unlist() |> as.vector()
+  x["Adaptive Exclusion Probability",] |> unlist() |> as.vector()
 }
+
+extractPi = function(x, snr, setting = NULL, data = F, active = NULL){
+  ep = x["EATS Pi",] |> unlist() |> as.vector()  
+  ap = x["ATS Pi",] |> unlist() |> as.vector()  
+  if (data == F){
+    dimension = c("n = 20, p = 1000, active = 2",
+                  "n = 100, p = 500, active = 10",
+                  "n = 200, p = 200, active = 20",
+                  "n = 500, p = 100, active = 20")
+    labels  = c("(I):~n==20*`,`~p==1000*`,`~`|`*beta[S]*`|`==2",
+                "(II):~n==100*`,`~p==500*`,`~`|`*beta[S]*`|`==10",
+                "(III):~n==200*`,`~p==200*`,`~`|`*beta[S]*`|`==20",
+                "(IV):~n==500*`,`~p==100*`,`~`|`*beta[S]*`|`==20")
+    SNR = c(0.5,1,2, 3)
+    SNRlabels = c("~SNR==0.5", "~SNR==1", "~SNR==2", "~SNR==3")
+    
+    d = data.frame("EATS" = ep, "ATS" = ap) |> reshape2::melt() |> 
+      mutate(variable = factor(variable, levels = c("ATS", "EATS")))
+    d$dimension = dimension[setting] 
+    d = d |> mutate(dimension = factor(dimension, labels = labels[setting]),
+                    SNR = SNR[SNR == snr]) 
+    d$SNR = factor(d$SNR, levels = snr, labels = SNRlabels[SNR == snr])
+  }else if (data == "proteomics"){
+    labels = c("n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==9",
+                    "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4")
+    dimension = c("n = 91, p = 721, active = 9",
+                  "n = 91, p = 721, active = 4")
+    SNR = c(1,3)
+    SNRlabels = c("~SNR==1", "~SNR==3")
+    d = data.frame("EATS" = ep, "ATS" = ap) |> reshape2::melt() |> 
+      mutate(variable = factor(variable, levels = c("ATS", "EATS")))
+    d$dimension = ifelse(active == 9, dimension[1], dimension[2])
+    d = d |> mutate(dimension = factor(dimension, labels = ifelse(active == 9, labels[1], labels[2])),
+                    SNR = snr) 
+    d$SNR = factor(d$SNR, levels = snr, labels = ifelse(snr == 1, SNRlabels[1], SNRlabels[2]))
+  }else if(data == "diabetes"){
+    labels = c("n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10",
+               "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==5")
+    dimension = c("n = 442, p = 64, active = 10",
+                  "n = 442, p = 64, active = 5")
+    SNR = c(1,3)
+    SNRlabels = c("~SNR==1", "~SNR==3")
+    d = data.frame("EATS" = ep, "ATS" = ap) |> reshape2::melt() |> 
+      mutate(variable = factor(variable, levels = c("ATS", "EATS")))
+    d$dimension = ifelse(active == 10, dimension[1], dimension[2])
+    d = d |> mutate(dimension = factor(dimension, labels = ifelse(active == 10, labels[1], labels[2])),
+                    SNR = snr) 
+    d$SNR = factor(d$SNR, levels = snr, labels = ifelse(snr == 1, SNRlabels[1], SNRlabels[2]))
+  }
+  d
+}
+
+
 
 convert = function(s){
   return((as.vector(s$max) |> sort(decreasing = T))*100)

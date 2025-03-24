@@ -5,7 +5,10 @@
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
-#         AUSTRALIA                                                 #          
+#         AUSTRALIA                                                 #
+#                                                                   #
+# Note: This will take 4 hours without parallelisation.             #
+#       I have provided the Rdata file for my simulations.          #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
 
@@ -42,7 +45,7 @@ true = c(rep(1, active),rep(0,ncol(X) - active ))
 d10.3 = pbreplicate(repeats, simulationATS(X = X, beta = beta, true = true, p = p, snr = snr))
 
 save(d5.1, d5.3, file = paste0(Sys.Date(), "_d5.RData"))
-save(d10.1, d10.3, file = paste0(Sys.Date(), "_d10sub.RData"))
+save(d10.1, d10.3, file = paste0(Sys.Date(), "_d10.RData"))
 
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
 # Figures
@@ -55,7 +58,7 @@ d5$Method = as.character(d5$Method)
 d5$Method[d5$Method == "LASSO 1SE"] = "LASSO"
 d5$Method[d5$Method == "Exclusion ATS"] = "EATS"
 d5$Method = factor(d5$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d5 = data.frame(d5) |> mutate(Dimension = "`|`*beta[S]*`|`==5") |> 
+d5 = data.frame(d5) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==5") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d10.1.df = d10.1 |> cleanMCC() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -65,7 +68,7 @@ d10$Method = as.character(d5$Method)
 d10$Method[d10$Method == "LASSO 1SE"] = "LASSO"
 d10$Method[d10$Method == "Exclusion ATS"] = "EATS"
 d10$Method = factor(d10$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d10 = data.frame(d10) |> mutate(Dimension = "`|`*beta[S]*`|`==10") |> 
+d10 = data.frame(d10) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d5plot = ggplot(d5,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -103,7 +106,7 @@ d5N$Method[d5N$Method == "LASSO 1SE"] = "LASSO"
 d5N$Method[d5N$Method == "Exclusion ATS"] = "EATS"
 d5N$Method[d5N$Method == "All"] = "ATS"
 d5N$Method = factor(d5N$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d5N = data.frame(d5N) |> mutate(Dimension = "`|`*beta[S]*`|`==5") |> 
+d5N = data.frame(d5N) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==5") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d10.1.df.N = d10.1 |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -114,7 +117,7 @@ d10N$Method[d10N$Method == "LASSO 1SE"] = "LASSO"
 d10N$Method[d10N$Method == "Exclusion ATS"] = "EATS"
 d10N$Method[d10N$Method == "All"] = "ATS"
 d10N$Method = factor(d10N$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d10N = data.frame(d10N) |> mutate(Dimension = "`|`*beta[S]*`|`==10") |> 
+d10N = data.frame(d10N) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d5nplot = ggplot(d5N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -157,7 +160,7 @@ d5Precision$Method[d5Precision$Method == "LASSO 1SE"] = "LASSO"
 d5Precision$Method[d5Precision$Method == "Exclusion ATS"] = "EATS"
 d5Precision$Method[d5Precision$Method == "All"] = "ATS"
 d5Precision$Method = factor(d5Precision$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d5Precision = data.frame(d5Precision) |> mutate(Dimension = "`|`*beta[S]*`|`==5") |> 
+d5Precision = data.frame(d5Precision) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==5") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d10.1.df.Precision = d10.1 |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -168,7 +171,7 @@ d10Precision$Method[d10Precision$Method == "LASSO 1SE"] = "LASSO"
 d10Precision$Method[d10Precision$Method == "Exclusion ATS"] = "EATS"
 d10Precision$Method[d10Precision$Method == "All"] = "ATS"
 d10Precision$Method = factor(d10Precision$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d10Precision = data.frame(d10Precision) |> mutate(Dimension = "`|`*beta[S]*`|`==10") |> 
+d10Precision = data.frame(d10Precision) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d5nplotprecision = ggplot(d5Precision,aes(x = Method, y = Precision, fill = Method)) + geom_boxplot(alpha = 0.65) +
@@ -204,7 +207,7 @@ d5Recall$Method[d5Recall$Method == "LASSO 1SE"] = "LASSO"
 d5Recall$Method[d5Recall$Method == "Exclusion ATS"] = "EATS"
 d5Recall$Method[d5Recall$Method == "All"] = "ATS"
 d5Recall$Method = factor(d5Recall$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d5Recall = data.frame(d5Recall) |> mutate(Dimension = "`|`*beta[S]*`|`==5") |> 
+d5Recall = data.frame(d5Recall) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==5") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 d10.1.df.Recall = d10.1 |> cleanRecall() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -215,7 +218,7 @@ d10Recall$Method[d10Recall$Method == "LASSO 1SE"] = "LASSO"
 d10Recall$Method[d10Recall$Method == "Exclusion ATS"] = "EATS"
 d10Recall$Method[d10Recall$Method == "All"] = "ATS"
 d10Recall$Method = factor(d10Recall$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
-d10Recall = data.frame(d10Recall) |> mutate(Dimension = "`|`*beta[S]*`|`==10") |> 
+d10Recall = data.frame(d10Recall) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
 pr = rbind(d10Recall, d5Recall)
@@ -240,3 +243,13 @@ prplot2 = ggplot(pp,aes(x = Method, y = Precision, fill = Method)) + geom_boxplo
   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
 prplot1|prplot2
+#---#---#---#---#---#---#---#---#---#---#---#---#---#---
+# ATS/EATS Estimated Pi
+diaPi = rbind(extractPi(d5.1, snr = 1, data = "diabetes", active = 5),
+              extractPi(d5.3, snr = 3, data = "diabetes", active = 5),
+              extractPi(d10.1, snr = 1, data = "diabetes", active = 10),
+              extractPi(d10.3, snr = 3, data = "diabetes", active = 10))
+
+ggplot(diaPi, aes(x = value, fill = variable)) + geom_density(alpha = 0.7) +
+  facet_grid(dimension~SNR, labeller = label_parsed) + xlab(TeX("Estimated $\\pi$")) + ylab("Frequency") +
+  theme_few_grid(base_size = 20) + scale_fill_manual(values = c("#FC8D62", "#FFD92F")) + labs(fill = "Method")
