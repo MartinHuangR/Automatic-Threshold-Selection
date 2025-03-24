@@ -19,7 +19,6 @@ library(hdi)
 library(patchwork)
 library(hrbrthemes)
 library(pbapply)
-library(latex2exp)
 
 filtered = c("ATS", "Exclusion ATS",
              "Static 0.60","Static 0.75", "Static 0.90", "LASSO 1SE", "Knockoff", "SCAD")
