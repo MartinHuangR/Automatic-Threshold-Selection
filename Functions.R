@@ -440,6 +440,24 @@ int getR(const NumericVector& d) {
 }
 ')
 
+Rcpp::cppFunction('
+NumericVector getLQ(const NumericVector& d) {
+  int p = d.size();
+  NumericVector lq(p, 0.0);
+  NumericVector sigma2(p);
+  for (int q = 0; q < p; q++) {
+    NumericVector d1 = head(d, q + 1);
+    NumericVector d2 = tail(d, p - (q + 1));
+    double mu1 = mean(d1);
+    double mu2 = mean(d2);
+    sigma2[q] = (sum(pow(d1 - mu1, 2)) + sum(pow(d2 - mu2, 2))) / (p - 2);
+    lq[q] = sum(dnorm(d1, mu1, sqrt(sigma2[q]), true)) +
+      sum(dnorm(d2, mu2, sqrt(sigma2[q]), true));
+  }
+  return lq;
+}
+')
+
 ### Generating Data ###
 extend <- function(alphabet) function(i) {
   base10toA <- function(n, A) {
@@ -451,14 +469,19 @@ extend <- function(alphabet) function(i) {
   vapply(i-1L, base10toA, character(1L), alphabet)
 }
 
-gendata = function(n, p, active){
+gendata = function(n, p, active, distribution = "mvnorm"){
   # Add letters as variable names
   MORELETTERS <- extend(LETTERS)     
   moreletters = MORELETTERS(c(1:p))
   
-  # Generate random data from multivariate gaussian with Toeplitz covariance matrix
-  toeshd = 0.5^abs(row(matrix(1:p, p, p)) - col(matrix(1:p, p, p)))
-  x = mvtnorm::rmvnorm(n  = n, sigma = toeshd)
+  if (distribution == "mvnorm"){
+    # Generate random data from multivariate gaussian with Toeplitz covariance matrix
+    toeshd = 0.5^abs(row(matrix(1:p, p, p)) - col(matrix(1:p, p, p)))
+    x = mvtnorm::rmvnorm(n  = n, sigma = toeshd)  
+  }else if (distribution == "uniform"){
+    x = runif(n*p) |> matrix(ncol = p, nrow = n)
+  }
+  
   
   # Randomly generate beta coefficient
   beta = rep(0,p)
@@ -468,7 +491,7 @@ gendata = function(n, p, active){
   beta[1:active] = sample(coefsigns, active, replace = T)
   colnames(x) = moreletters
   names(beta) = moreletters[1:length(beta)]
-  y <- x %*% beta
+  y = x %*% beta
   
   list("Y" = y, "X" = x, "beta" = beta)
 }
