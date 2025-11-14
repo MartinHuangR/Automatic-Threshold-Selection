@@ -136,13 +136,14 @@ c22hard = combine(S2.05hard, S2.1hard, S2.2hard, S2.3hard,  2, filtered = filter
 c33hard = combine(S3.05hard, S3.1hard, S3.2hard, S3.3hard,  3, filtered = filtered) |> makeCluster()
 c44hard = combine(S4.05hard, S4.1hard, S4.2hard, S4.3hard,  4, filtered = filtered) |> makeCluster()
 
-c1hard = rbind(c11hard,c22hard) |> totplotnoaxis()
-c2hard = rbind(c33hard,c44hard) |> totplot()
+# c1hard = rbind(c11hard,c22hard) |> totplotnoaxis()
+# c2hard = rbind(c33hard,c44hard) |> totplot()
 
 c1hardM = rbind(c11hard,c22hard) |> totMEANplotnoaxis()
 c2hardM = rbind(c33hard,c44hard) |> totMEANplot()
 
-c1hard/c2hard
+# c1hard/c2hard
+# 14/10
 c1hardM/c2hardM + plot_layout(guides = "collect", axis_titles = "collect")
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Variables Selected
@@ -151,13 +152,13 @@ c22Nhard = combineN(S2.05hard, S2.1hard, S2.2hard, S2.3hard,  2, filtered = filt
 c33Nhard = combineN(S3.05hard, S3.1hard, S3.2hard, S3.3hard,  3, filtered = filtered) |> makeCluster()
 c44Nhard = combineN(S4.05hard, S4.1hard, S4.2hard, S4.3hard,  4, filtered = filtered) |> makeCluster()
 
-c1nhard = rbind(c11Nhard,c22Nhard) |> totplotNnoaxis(lim = 50)
-c2nhard = rbind(c33Nhard,c44Nhard) |> totplotN(lim = 60)
+# c1nhard = rbind(c11Nhard,c22Nhard) |> totplotNnoaxis(lim = 50)
+# c2nhard = rbind(c33Nhard,c44Nhard) |> totplotN(lim = 60)
 
 c1nhardM = rbind(c11Nhard,c22Nhard) |> NtotMEANplotnoaxis(lim = 50)
 c2nhardM = rbind(c33Nhard,c44Nhard) |> NtotMEANplot(lim = 60)
 
-c1nhard/c2nhard
+# c1nhard/c2nhard
 c1nhardM/c2nhardM + plot_layout(guides = "collect", axis_titles = "collect")
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Recall

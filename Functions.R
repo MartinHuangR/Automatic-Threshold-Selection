@@ -480,6 +480,9 @@ gendata = function(n, p, active, distribution = "mvnorm"){
     x = mvtnorm::rmvnorm(n  = n, sigma = toeshd)  
   }else if (distribution == "uniform"){
     x = runif(n*p) |> matrix(ncol = p, nrow = n)
+  }else if (distribution == "t"){
+    toes2 = 0.2^abs(row(matrix(1:p, p, p)) - col(matrix(1:p, p, p)))
+    x = mvtnorm::rmvt(n = n, sigma = toes2, df = 3)
   }
   
   
@@ -689,7 +692,7 @@ NtotMEANplotnoaxis = function(TOT, lim = max(TOT$NN)){
     summarise(mean = mean(NN), .groups = "drop")
   
   ggplot(TOTm, aes(x = Method, y = mean, group = SNR)) +
-    geom_line(linetype = "dotted") + 
+    geom_line(linetype = "solid", alpha = 0.3, linewidth = 0.5) + 
     ylab("Variables Selected") + 
     geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
     geom_point(aes(colour = Method, shape = SNR, fill = Method), size = 3, show.legend = TRUE) +  
@@ -726,7 +729,7 @@ NtotMEANplot = function(TOT, lim = max(TOT$NN)){
     summarise(mean = mean(NN), .groups = "drop")
   
   ggplot(TOTm, aes(x = Method, y = mean, group = SNR)) +
-    geom_line(linetype = "dotted") + 
+    geom_line(linetype = "solid", alpha = 0.3, linewidth = 0.5) + 
     ylab("Variables Selected") + 
     geom_hline(data = TOTdummy, aes(yintercept = active), linetype = "dashed", linewidth = 0.5) + 
     geom_point(aes(colour = Method, shape = SNR, fill = Method), size = 3, show.legend = TRUE) +  
@@ -750,7 +753,7 @@ totMEANplotnoaxis <- function(TOT){
     summarise(mean = mean(MCC), .groups = "drop")
   
   ggplot(TOTm, aes(x = Method, y = mean, group = SNR)) +
-    geom_line(linetype = "dotted") + 
+    geom_line(linetype = "solid", alpha = 0.3, linewidth = 0.5) + 
     ylab("MCC") + 
     geom_point(aes(colour = Method, shape = SNR, fill = Method), size = 3, show.legend = TRUE) +  
     facet_grid(~Dimension, labeller = label_parsed) + 
@@ -775,7 +778,7 @@ totMEANplotnoaxis <- function(TOT){
 totMEANplot = function(TOT, stat){
   TOTm = TOT |> group_by(Method, SNR, Dimension) |> summarise(mean = mean(MCC))
   ggplot(TOTm, aes(x = Method, y = mean, group = interaction(SNR))) +
-    geom_line(linetype = "dotted") + 
+    geom_line(linetype = "solid", alpha = 0.3, linewidth = 0.5) + 
     ylab("MCC") + 
     geom_point(aes(colour = Method, shape = SNR, fill = Method), size = 3, show.legend = T) +
     facet_grid(~Dimension, labeller = label_parsed) + 

@@ -70,31 +70,30 @@ d10$Method = factor(d10$Method, levels = c("ATS", "EATS", "Static 0.60", "Static
 d10 = data.frame(d10) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
-d5plot = ggplot(d5,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  theme_few_grid(base_size = 20) +
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  xlab(element_blank()) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank(),
-        strip.text.x = element_blank()) + 
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-
-d10plot = ggplot(d10,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  theme_few_grid(base_size = 20) +
-  xlab(element_blank()) + 
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank()) +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-
+# d5plot = ggplot(d5,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   theme_few_grid(base_size = 20) +
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   xlab(element_blank()) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank(),
+#         strip.text.x = element_blank()) + 
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# d10plot = ggplot(d10,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   theme_few_grid(base_size = 20) +
+#   xlab(element_blank()) + 
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank()) +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Variables Selected
 d5.1.df.N = d5.1 |> cleanN() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
@@ -119,36 +118,40 @@ d10N$Method = factor(d10N$Method, levels = c("ATS", "EATS", "Static 0.60", "Stat
 d10N = data.frame(d10N) |> mutate(Dimension = "n==442*`,`~p==64*`,`~`|`*beta[S]*`|`==10") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
-d5nplot = ggplot(d5N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  ylab("Variables Selected") + 
-  theme_few_grid(base_size = 20) +
-  geom_hline( aes(yintercept = 5), linetype = "dashed", linewidth = 0.5) +
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  coord_cartesian(ylim = c(0, 25)) +
-  xlab(element_blank()) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-        strip.text.x = element_blank()) +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
-d10nplot = ggplot(d10N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  ylab("Variables Selected") + 
-  theme_few_grid(base_size = 20) +
-  coord_cartesian(ylim = c(0, 35)) +
-  xlab(element_blank()) + 
-  geom_hline( aes(yintercept = 10), linetype = "dashed", linewidth = 0.5) +
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank(),
-        strip.text.x = element_blank())   +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 14/10
+((totMEANplotnoaxis(d10) | totMEANplotnoaxis(d5)) +  plot_layout(axis_titles = "collect", guides = "collect")) / ((NtotMEANplot(d10N) + theme(legend.position = "none") | NtotMEANplot(d5N)) + theme(legend.position = "none") +  plot_layout(guides = "collect", axis_titles = "collect")) 
 
-d10plot/d5plot/d10nplot/d5nplot
+# d5nplot = ggplot(d5N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   ylab("Variables Selected") + 
+#   theme_few_grid(base_size = 20) +
+#   geom_hline( aes(yintercept = 5), linetype = "dashed", linewidth = 0.5) +
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   coord_cartesian(ylim = c(0, 25)) +
+#   xlab(element_blank()) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+#         strip.text.x = element_blank()) +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# d10nplot = ggplot(d10N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   ylab("Variables Selected") + 
+#   theme_few_grid(base_size = 20) +
+#   coord_cartesian(ylim = c(0, 35)) +
+#   xlab(element_blank()) + 
+#   geom_hline( aes(yintercept = 10), linetype = "dashed", linewidth = 0.5) +
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank(),
+#         strip.text.x = element_blank())   +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# d10plot/d5plot/d10nplot/d5nplot
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Precision
 d5.1.df.Precision = d5.1 |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")

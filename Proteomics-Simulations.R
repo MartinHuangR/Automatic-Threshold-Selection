@@ -72,30 +72,30 @@ pro4$Method = factor(pro4$Method, levels = c("ATS", "EATS", "Static 0.60", "Stat
 pro4 = data.frame(pro4) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
 
-pro9plot = ggplot(pro9,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  theme_few_grid(base_size = 20) +
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  ylim(0, 1) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank()) +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-
-pro4plot = ggplot(pro4,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  theme_few_grid(base_size = 20) +
-  ylim(0, 1) + 
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank(),
-        strip.text.x = element_blank())+
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# pro9plot = ggplot(pro9,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   theme_few_grid(base_size = 20) +
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   ylim(0, 1) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank()) +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# pro4plot = ggplot(pro4,aes(x = Method, y = MCC, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   theme_few_grid(base_size = 20) +
+#   ylim(0, 1) + 
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank(),
+#         strip.text.x = element_blank())+
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Variables Selected
@@ -120,38 +120,39 @@ pro4N$Method[pro4N$Method == "All"] = "ATS"
 pro4N$Method = factor(pro4N$Method, levels = c("ATS", "EATS", "Static 0.60", "Static 0.75", "Static 0.90", "LASSO","Knockoff","SCAD"))
 pro4N = data.frame(pro4N) |> mutate(Dimension = "n==91*`,`~p==721*`,`~`|`*beta[S]*`|`==4") |> 
   mutate(Dimension = factor(Dimension)) |> makeCluster()
+# 
+# pro9nplot = ggplot(pro9N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   ylab("Variables Selected") + 
+#   theme_few_grid(base_size = 20) +
+#   coord_cartesian(ylim = c(0, 50)) + 
+#   geom_hline( aes(yintercept = 9), linetype = "dashed", linewidth = 0.5) +
+#   xlab(element_blank()) + 
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",
+#         axis.title.x=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x= element_blank(),
+#         strip.text.x = element_blank()) +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# pro4nplot = ggplot(pro4N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
+#   facet_grid(Dimension ~SNR, labeller = label_parsed) +
+#   ylab("Variables Selected") + 
+#   theme_few_grid(base_size = 20) +
+#   coord_cartesian(ylim = c(0, 60)) + 
+#   geom_hline( aes(yintercept = 4), linetype = "dashed", linewidth = 0.5) +
+#   stat_summary(fun ="mean", shape = 5, size = 0.5) + 
+#   xlab(element_blank()) + 
+#   stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
+#   theme(legend.position = "none",axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
+#         strip.text.x = element_blank()) +
+#   scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
+# 
+# pro9plot/pro4plot/pro9nplot/pro4nplot
 
-pro9nplot = ggplot(pro9N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  ylab("Variables Selected") + 
-  theme_few_grid(base_size = 20) +
-  coord_cartesian(ylim = c(0, 50)) + 
-  geom_hline( aes(yintercept = 9), linetype = "dashed", linewidth = 0.5) +
-  xlab(element_blank()) + 
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x= element_blank(),
-        strip.text.x = element_blank()) +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-
-pro4nplot = ggplot(pro4N,aes(x = Method, y = NN, fill = Method)) + geom_boxplot(alpha = 0.65) +
-  facet_grid(Dimension ~SNR, labeller = label_parsed) +
-  ylab("Variables Selected") + 
-  theme_few_grid(base_size = 20) +
-  coord_cartesian(ylim = c(0, 60)) + 
-  geom_hline( aes(yintercept = 4), linetype = "dashed", linewidth = 0.5) +
-  stat_summary(fun ="mean", shape = 5, size = 0.5) + 
-  xlab(element_blank()) + 
-  stat_summary(fun= "mean", geom="line", linetype ="solid", linewidth = 0.5,  aes(group= cluster, alpha = 2)) +
-  theme(legend.position = "none",axis.text.x = element_text(angle = 45, vjust = 1, hjust=1),
-        strip.text.x = element_blank()) +
-  scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
-
-pro9plot/pro4plot/pro9nplot/pro4nplot
-
+((totMEANplotnoaxis(pro9) | totMEANplotnoaxis(pro4)) +  plot_layout(axis_titles = "collect", guides = "collect")) / ((NtotMEANplot(pro9N) + theme(legend.position = "none") | NtotMEANplot(pro4N)) + theme(legend.position = "none") +  plot_layout(guides = "collect", axis_titles = "collect")) 
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Precision
 pro4.1.df.Precision = pro4.1 |> cleanPrecision() |> dplyr::filter(Method %in% filtered) |> mutate(SNR = "~SNR==1")
