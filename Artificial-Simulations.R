@@ -1,17 +1,19 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # R-code functions to produce Section 4.1                           #
 # in the paper: Data-Adaptive Automatic Threshold Calibration       #
-#  for Stability Selection (Huang et al. 2025)                      #
+#  for Stability Selection (Huang et al. 2026)                      #
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #  
 #                                                                   #
-# Note: This will take more than 24 hours without parallelisation.  #
+# The following script provides artificial simulations with         #
+# multivariate normal design                                        #
+#                                                                   #
+# Note: This should take more than 24 hours without parallelisation.#
 #       I have provided the Rdata file for my simulations.          #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
-
 
 # Each Rdata file contains 4 SNRs for their respective simulation.
 # load("Data/S1.Rdata")
@@ -130,20 +132,17 @@ save(S4.05hard, S4.2hard, S4.3hard, S4.1hard, file = paste0(Sys.Date(), "_S4.RDa
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
 # Figures
 #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--
-# MCC
+methods = c("ATS", "EATS", "Static 0.75", "LASSO", "Knockoff", "SCAD")
+# Prepare MCC
 c11hard = combine(S1.05hard, S1.1hard, S1.2hard, S1.3hard,  1, filtered = filtered) |> makeCluster()
 c22hard = combine(S2.05hard, S2.1hard, S2.2hard, S2.3hard,  2, filtered = filtered) |> makeCluster()
 c33hard = combine(S3.05hard, S3.1hard, S3.2hard, S3.3hard,  3, filtered = filtered) |> makeCluster()
 c44hard = combine(S4.05hard, S4.1hard, S4.2hard, S4.3hard,  4, filtered = filtered) |> makeCluster()
 
-# c1hard = rbind(c11hard,c22hard) |> totplotnoaxis()
-# c2hard = rbind(c33hard,c44hard) |> totplot()
+# Plot MCC
+c1hardM = rbind(c11hard,c22hard) |> dplyr::filter(Method %in% methods) |> totMEANplotnoaxis()
+c2hardM = rbind(c33hard,c44hard) |> dplyr::filter(Method %in% methods)|> totMEANplot()
 
-c1hardM = rbind(c11hard,c22hard) |> totMEANplotnoaxis()
-c2hardM = rbind(c33hard,c44hard) |> totMEANplot()
-
-# c1hard/c2hard
-# 14/10
 c1hardM/c2hardM + plot_layout(guides = "collect", axis_titles = "collect")
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Variables Selected
@@ -152,33 +151,11 @@ c22Nhard = combineN(S2.05hard, S2.1hard, S2.2hard, S2.3hard,  2, filtered = filt
 c33Nhard = combineN(S3.05hard, S3.1hard, S3.2hard, S3.3hard,  3, filtered = filtered) |> makeCluster()
 c44Nhard = combineN(S4.05hard, S4.1hard, S4.2hard, S4.3hard,  4, filtered = filtered) |> makeCluster()
 
-# c1nhard = rbind(c11Nhard,c22Nhard) |> totplotNnoaxis(lim = 50)
-# c2nhard = rbind(c33Nhard,c44Nhard) |> totplotN(lim = 60)
+# Plot Variables Selected
+c1nhardM = rbind(c11Nhard,c22Nhard) |> dplyr::filter(Method %in% methods) |> NtotMEANplotnoaxis(lim = 50)
+c2nhardM = rbind(c33Nhard,c44Nhard) |> dplyr::filter(Method %in% methods) |> NtotMEANplot(lim = 60)
 
-c1nhardM = rbind(c11Nhard,c22Nhard) |> NtotMEANplotnoaxis(lim = 50)
-c2nhardM = rbind(c33Nhard,c44Nhard) |> NtotMEANplot(lim = 60)
-
-# c1nhard/c2nhard
 c1nhardM/c2nhardM + plot_layout(guides = "collect", axis_titles = "collect")
-#---#---#---#---#---#---#---#---#---#---#---#---#---#---
-# Recall
-c11Recallhard = combineRecall(S1.05hard,S1.1hard, S1.2hard, S1.3hard,  1, filtered = filtered) |> makeCluster()
-c22Recallhard = combineRecall(S2.05hard,S2.1hard, S2.2hard, S2.3hard,  2, filtered = filtered) |> makeCluster()
-c33Recallhard = combineRecall(S3.05hard,S3.1hard, S3.2hard, S3.3hard,  3, filtered = filtered) |> makeCluster()
-c44Recallhard = combineRecall(S4.05hard,S4.1hard, S4.2hard, S4.3hard,  4, filtered = filtered) |> makeCluster()
-
-#---#---#---#---#---#---#---#---#---#---#---#---#---#---
-#Precision 
-c11Precisionhard = combinePrecision(S1.05hard, S1.1hard,S1.2hard, S1.3hard, 1, filtered = filtered) |> makeCluster()
-c22Precisionhard = combinePrecision(S2.05hard, S2.1hard,S2.2hard, S2.3hard, 2, filtered = filtered) |> makeCluster()
-c33Precisionhard = combinePrecision(S3.05hard, S3.1hard,S3.2hard, S3.3hard, 3, filtered = filtered) |> makeCluster()
-c44Precisionhard = combinePrecision(S4.05hard, S4.1hard,S4.2hard, S4.3hard, 4, filtered = filtered) |> makeCluster()
-
-phard1 = prplot1(c11Recallhard, c11Precisionhard, c22Recallhard, c22Precisionhard)
-phard2 = prplot1(c33Recallhard, c33Precisionhard, c44Recallhard, c44Precisionhard)
-
-phard1
-phard2
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # Exclusion probability threshold
 s1.05e = exclusion(S1.05hard)
@@ -222,7 +199,6 @@ ggplot(excl, aes(x = SNR, y = Eta)) + geom_boxplot(alpha = 0.65) +
 
 #---#---#---#---#---#---#---#---#---#---#---#---#---#---
 # ATS/EATS Estimated Pi
-
 S1pi = rbind(extractPi(S1.05hard, 0.5, 1),
              extractPi(S1.1hard, 1, 1),
              extractPi(S1.2hard, 2, 1),

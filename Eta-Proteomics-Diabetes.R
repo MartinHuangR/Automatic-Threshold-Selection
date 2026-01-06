@@ -8,10 +8,10 @@
 #         School of Mathematics & Statistics, University of Sydney  #          
 #         AUSTRALIA                                                 #          
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-load("Data/pro4.RData")
-load("Data/pro9.RData")
-load("Data/d10.Rdata")
-load("Data/d5.Rdata")
+# load("Data/pro4.RData")
+# load("Data/pro9.RData")
+# load("Data/d10.Rdata")
+# load("Data/d5.Rdata")
 
 pro9.1e = exclusion(pro9.1)
 pro9.3e =  exclusion(pro9.3)

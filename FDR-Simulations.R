@@ -9,10 +9,10 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 source("Functions.R")
 
-load("Data/FDR.I.RData")
-load("Data/FDR.II.RData")
-load("Data/FDR.III.RData")
-load("Data/FDR.IV.RData")
+# load("Data/FDR.I.RData")
+# load("Data/FDR.II.RData")
+# load("Data/FDR.III.RData")
+# load("Data/FDR.IV.RData")
 
 # Setting 1
 set.seed(1)
@@ -152,3 +152,5 @@ f = rbind(fI, fII, fIII, fIV) |>
             avg.selected = mean(n.selected)) |> 
   mutate(correct.prop = round(correct.prop, 2),
          avg.selected = round(avg.selected,2))
+
+f

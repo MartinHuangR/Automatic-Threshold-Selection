@@ -675,7 +675,9 @@ totplotNnoaxis = function(TOT, lim = max(TOT$NN)){
     scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"))
 }
 
-NtotMEANplotnoaxis = function(TOT, lim = max(TOT$NN)){
+NtotMEANplotnoaxis = function(TOT, lim = max(TOT$NN), proDiab = F){
+  if (proDiab == T){text = c("SNR==1", "SNR==3")}
+  if (proDiab == F){text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3")}
   str = unique(TOT$Dimension) |> as.character() |> strsplit(split = "|")
   active = numeric(length(str))
   for (i in 1:length(str)){
@@ -706,13 +708,15 @@ NtotMEANplotnoaxis = function(TOT, lim = max(TOT$NN)){
     ) +
     scale_shape_manual(
       values = c(21,22,23,24), 
-      labels = parse(text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3"))  # parsed SNR labels
+      labels = parse(text = text)  # parsed SNR labels
     ) +
-    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
-    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
+    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
 }
 
-NtotMEANplot = function(TOT, lim = max(TOT$NN)){
+NtotMEANplot = function(TOT, lim = max(TOT$NN), proDiab = F){
+  if (proDiab == T){text = c("SNR==1", "SNR==3")}
+  if (proDiab == F){text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3")}
   str = unique(TOT$Dimension) |> as.character() |> strsplit(split = "|")
   active = numeric(length(str))
   for (i in 1:length(str)){
@@ -740,14 +744,15 @@ NtotMEANplot = function(TOT, lim = max(TOT$NN)){
       legend.title = element_blank()) +
     scale_shape_manual(
       values = c(21,22,23,24), 
-      labels = parse(text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3"))  # parsed SNR labels
+      labels = parse(text = text)  # parsed SNR labels
     ) +
-    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
-    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
+    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854", "#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
 }
 
-totMEANplotnoaxis <- function(TOT){
-  
+totMEANplotnoaxis <- function(TOT, proDiab = F){
+  if (proDiab == T){text = c("SNR==1", "SNR==3")}
+  if (proDiab == F){text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3")}
   TOTm <- TOT |> 
     group_by(Method, SNR, Dimension) |> 
     summarise(mean = mean(MCC), .groups = "drop")
@@ -766,16 +771,18 @@ totMEANplotnoaxis <- function(TOT){
     ) +
     scale_shape_manual(
       values = c(21,22,23,24), 
-      labels = parse(text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3"))  # parsed SNR labels
+      labels = parse(text = text)  # parsed SNR labels
     ) +
-    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
-    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
+    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
 }
 
 
 
 
-totMEANplot = function(TOT, stat){
+totMEANplot = function(TOT, stat, proDiab = F){
+  if (proDiab == T){text = c("SNR==1", "SNR==3")}
+  if (proDiab == F){text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3")}
   TOTm = TOT |> group_by(Method, SNR, Dimension) |> summarise(mean = mean(MCC))
   ggplot(TOTm, aes(x = Method, y = mean, group = interaction(SNR))) +
     geom_line(linetype = "solid", alpha = 0.3, linewidth = 0.5) + 
@@ -789,10 +796,10 @@ totMEANplot = function(TOT, stat){
     xlab(element_blank()) +
     scale_shape_manual(
       values = c(21,22,23,24), 
-      labels = parse(text = c("SNR==0.5", "SNR==1", "SNR==2", "SNR==3"))  # parsed SNR labels
+      labels = parse(text = text)  # parsed SNR labels
     ) +
-    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
-    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#A6D854","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
+    scale_colour_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none") +  # hide colour legend
+    scale_fill_manual(values = c("#FC8D62", "#FFD92F","#A6D854","#8DA0CB","#8DA0CB","#8DA0CB"), guide = "none")  # hide fill legend
 }
 
 combineRecall = function(a,b,c = NULL,d, ref,filtered = NULL, ribo = F){
