@@ -1,9 +1,14 @@
 # Data-Adaptive Automatic Threshold Calibration for Stability Selection
  
-This repository contains code to reproduce results as given in the paper "Data-Adaptive Automatic Threshold Calibration for Stability Selection". 
+This repository contains code to reproduce results as given in the paper "Data-Adaptive Automatic Threshold Calibration for Stability Selection" (Huang et al. 2026). For any questions please email martin.huang@sydney.edu.au. 
 
 ## Simulations
-We provide the four reproducible simulation results in "Artificial-Simulations.R", "Diabetes-Simulations.R", "Proteomics-Simulation.R", and FDR-Simulations.R. Note that running all four scripts will take at least 48 hours without parallelisation. Therefore we also provide the .Rdata files, which can be found in the "Data" folder.
+We provide all simulation results. 
+
+* For artificial simulations, the code is located under "Artificial-Simulations.R", "Artificial-Simulations-Unif", and "Artificial-Simulations-t".
+* For applied simulations, the code is located under "Proteomics-Simulations.R" and "Diabetes-Simulations.R".
+
+We also provide the distribution analysis of the exclusion probability threshold under "Eta-Proteomics-Diabetes.R and "Artificial-Simulations.R" for the respective datasets. FDR analysis is found under "FDR-Simulations.R".
 
 To reproduce the figures, we provide RData files in the "Data" folder, and also provide code in their respective scripts. I.e. to reproduce figures in the Proteomics simulations, the code are found at the end of "Proteomics-Simulation.R".
 
@@ -17,8 +22,6 @@ Please note that we are aware of an issue whereby the `stabsel` function does no
 We provide the plasma proteomics dataset as "Proteomics.csv" in the folder "Data", and was sourced from Rumer et al. (2022). The diabetes dataset can be accessed through the R-package `lars` and `data(diabetes)`. The artificial data generation process can be located in "Functions.R"
 
 ## Package References
-
-
 
 Benjamin Hofner and Torsten Hothorn (2021). stabs: Stability Selection with Error Control, R package version 0.6-4 https://CRAN.R-project.org/package=stabs.
 
