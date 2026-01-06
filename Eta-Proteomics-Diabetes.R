@@ -2,7 +2,7 @@
 # R-code to reproduce Proteomics and Diabetes                       #
 # Exclusion Probability Threshold figure                            #
 # in the paper: Data-Adaptive Automatic Threshold Calibration       #
-#  for Stability Selection (Huang et al. 2025)                      #                                    
+#  for Stability Selection (Huang et al. 2026)                      #                                    
 #                                                                   #
 # Author: Martin Huang (martin.huang@sydney.edu.au)                 #          
 #         School of Mathematics & Statistics, University of Sydney  #          
